@@ -60,7 +60,7 @@ implementations of this feature.
 Per a suggestion by Geoff Mulligan, cgic now tolerates keys without a value in URL-encoded GET and POST submissions. Although the HTML5 spec discourages it, there are existing systems in the wild that do leave the `=` off entirely if the value is an empty string. Beginning with version 2.07, `cgic` handles this as you'd expect: you get an entry with the corresponding key and an empty string as the value. A simple unit test compilation target was also added, to test this feature and rule out side effects.
 <h3><a name="whatsnew206">What's new in version 2.06?</a></h3>
 A long list of significant fixes generously contributed by Jeffrey Hutzelman.
-<a href="https://github.com/boutell/cgic/commit/2065a2dfa480209bd6171acb2a4edd6e1c27a062"> These are especially important on platforms where attempting to read beyong the content length stated by the request can lead to a deadlock. Please see the commit notes.</a>
+<a href="https://github.com/boutell/cgic/commit/2065a2dfa480209bd6171acb2a4edd6e1c27a062"> These are especially important on platforms where attempting to read beyond the content length stated by the request can lead to a deadlock. Please see the commit notes.</a>
 <h3><a name="whatsnew205">What's new in version 2.05?</a></h3>
 Uploaded files properly closed; corrects a resource leak and enables
 file uploads to work properly on platforms with particular file
@@ -265,7 +265,7 @@ available if you do not already have them.
 <p>
 <strong>Important:</strong> to use cgic, you will need an ANSI-standard
 C compiler. Under Unix, just obtain and use gcc. Most Unix systems have
-standardiszed on gcc. Users of Windows operating systems should not have
+standardized on gcc. Users of Windows operating systems should not have
 ANSI C-related problems as all of the popular compilers follow the ANSI 
 standard.
 <p>
@@ -434,7 +434,7 @@ Many browsers reject cookies completely; others do not necessarily keep
 them as long as requested or return them with their values intact.
 Always code defensively when using cookies.
 <p>
-The cname and cvalue parameters are of course the namd and value for
+The cname and cvalue parameters are of course the name and value for
 the cookie. The third argument is the time, in seconds, that the
 cookie should "live" on the browser side before it expires; in this
 case it has been set to 86,400 seconds, which is exactly one day. 
@@ -913,7 +913,7 @@ actual file will contain a valid JPEG image suitable for display.
 The content type submitted by the browser can be queried using the
 <a href="#cgiFormFileContentType">cgiFormFileContentType</a> function.
 <p>
-Of course, CGIC also provides access to the actual uploded file. 
+Of course, CGIC also provides access to the actual uploaded file. 
 First, the programmer calls <a href="#cgiFormFileOpen">cgiFormFileOpen</a>,
 passing the address of a <code>cgiFilePtr</code> object. If this function
 succeeds, the <code>cgiFilePtr</code> object becomes valid, and can be
@@ -1581,7 +1581,7 @@ and <a href="#cgiFormFileRead">cgiFormFileRead</a>.
 void cgiHeaderLocation(char *redirectUrl)</a>
 </strong><br><dd>
 cgiHeaderLocation() should be called if the programmer wishes to
-redirect the user to a different URL. No futher output
+redirect the user to a different URL. No further output
 is needed in this case.
 <p>
 If you wish to set cookies,
@@ -1666,7 +1666,7 @@ See also <a href="#cgiHeaderCookieSetString">cgiHeaderCookieSetString</a>,
 void cgiHeaderCookieSetString(char *name, char *value,
   int secondsToLive, char *path, char *domain)</a>
 </strong><br><dd>
-cgiHeaderCookieSetString() is kept for API compability reasons. It calls
+cgiHeaderCookieSetString() is kept for API compatibility reasons. It calls
 <a href"#cgiHeaderCookieSet()">cgiHeaderCookieSet</a> with zero as sixth
 argument, i.e. no cookie options are set.
 <br><br><dt><strong><a name="cgiHeaderCookieSetInteger">

@@ -63,7 +63,7 @@ The new function
 <code><a href="#cgiHeaderCookieSet">cgiHeaderCookieSet</a></code>
 allows you to set these options. The function
 <code><a href="#cgiHeaderCookieSetString">cgiHeaderCookieSetString</a></code>
-is kept for compability reasons.
+is kept for compatibility reasons.
 <h3><a name="whatsnew207">What's new in version 2.07?</a></h3>
 Per a suggestion by Geoff Mulligan, cgic now tolerates keys without a value in URL-encoded GET and POST submissions. Although the HTML5 spec discourages it, there are existing systems in the wild that do leave the `=` off entirely if the value is an empty string. Beginning with version 2.07, `cgic` handles this as you'd expect: you get an entry with the corresponding key and an empty string as the value. A simple unit test compilation target was also added, to test this feature and rule out side effects.
 <h3><a name="whatsnew206">What's new in version 2.06?</a></h3>
@@ -1707,7 +1707,7 @@ See also <a href="#cgiHeaderCookieSetString">cgiHeaderCookieSetString</a>,
 void cgiHeaderCookieSetString(char *name, char *value,
   int secondsToLive, char *path, char *domain)</a>
 </strong><br><dd>
-cgiHeaderCookieSetString() is kept for API compability reasons. It calls
+cgiHeaderCookieSetString() is kept for API compatibility reasons. It calls
 <a href"#cgiHeaderCookieSet()">cgiHeaderCookieSet</a> with zero (0) as sixth
 argument, i.e. no cookie options are set.
 <br><br><dt><strong><a name="cgiHeaderCookieSetInteger">

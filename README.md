@@ -68,7 +68,7 @@ is kept for compability reasons.
 Per a suggestion by Geoff Mulligan, cgic now tolerates keys without a value in URL-encoded GET and POST submissions. Although the HTML5 spec discourages it, there are existing systems in the wild that do leave the `=` off entirely if the value is an empty string. Beginning with version 2.07, `cgic` handles this as you'd expect: you get an entry with the corresponding key and an empty string as the value. A simple unit test compilation target was also added, to test this feature and rule out side effects.
 <h3><a name="whatsnew206">What's new in version 2.06?</a></h3>
 A long list of significant fixes generously contributed by Jeffrey Hutzelman.
-<a href="https://github.com/boutell/cgic/commit/2065a2dfa480209bd6171acb2a4edd6e1c27a062"> These are especially important on platforms where attempting to read beyong the content length stated by the request can lead to a deadlock. Please see the commit notes.</a>
+<a href="https://github.com/boutell/cgic/commit/2065a2dfa480209bd6171acb2a4edd6e1c27a062"> These are especially important on platforms where attempting to read beyond the content length stated by the request can lead to a deadlock. Please see the commit notes.</a>
 <h3><a name="whatsnew205">What's new in version 2.05?</a></h3>
 Uploaded files properly closed; corrects a resource leak and enables
 file uploads to work properly on platforms with particular file

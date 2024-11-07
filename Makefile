@@ -1,8 +1,13 @@
-CFLAGS=-g -Wall
-CC=gcc
+ifdef NDEBUG
+CFLAGS=-O$(NDEBUG) -DNDEBUG
+else # !NDEBUG
+CFLAGS=-Og -ggdb3 -DCGICDEBUG
+endif # ?NDEBUG
+CFLAGS += -march=native -fPIC -fexceptions -fasynchronous-unwind-tables -fno-omit-frame-pointer -pthread -Wall
+CC=gcc$(GNU)
 AR=ar
 RANLIB=ranlib
-LIBS=-L./ -lcgic
+LIBS=-L. -lcgic
 
 all: libcgic.a cgictest.cgi capture
 
@@ -17,6 +22,7 @@ libcgic.a: cgic.o cgic.h
 	$(RANLIB) libcgic.a
 
 #mingw32 and cygwin users: replace .cgi with .exe
+#static link: add -static -s
 
 cgictest.cgi: cgictest.o libcgic.a
 	gcc cgictest.o -o cgictest.cgi ${LIBS}

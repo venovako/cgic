@@ -10,14 +10,13 @@
 #define cgicMaxTempSize 1073741824
 
 #if CGICDEBUG
-#define CGICDEBUGSTART \
-	{ \
-		FILE *dout; \
-		dout = fopen("/home/boutell/public_html/debug", "a"); \
-	
+#define CGICDEBUGSTART                             \
+  {                                                \
+    FILE *dout = fopen(cgicTempDir "/debug", "a"); \
+
 #define CGICDEBUGEND \
-		fclose(dout); \
-	}
+    fclose(dout);    \
+  }
 #else /* CGICDEBUG */
 #define CGICDEBUGSTART
 #define CGICDEBUGEND
@@ -172,7 +171,7 @@ int main(int argc, char *argv[]) {
 			sat++;
 			while (isspace(*sat)) {
 				sat++;
-			}	
+			}
 			if (cgiStrBeginsNc(sat, "boundary=")) {
 				char *s;
 				cgiMultipartBoundary = sat + strlen("boundary=");
@@ -184,7 +183,7 @@ int main(int argc, char *argv[]) {
 				break;
 			} else {
 				sat = strchr(sat, ';');
-			} 	
+			}
 		}
 	}
 	cgiGetenv(&cgiContentLengthString, "CONTENT_LENGTH");
@@ -219,7 +218,7 @@ int main(int argc, char *argv[]) {
 		if (argv[0]) {
 			cgiRestored = 0;
 		}
-	}	
+	}
 
 
 	if (cgiStrEqNc(cgiRequestMethod, "post")) {
@@ -243,7 +242,7 @@ int main(int argc, char *argv[]) {
 				cgiHeaderStatus(500, "Error reading form data");
 				cgiFreeResources();
 				return -1;
-			}	
+			}
 #ifdef CGICDEBUG
 			CGICDEBUGSTART
 			fprintf(dout, "PostFormInput succeeded\n");
@@ -264,7 +263,7 @@ int main(int argc, char *argv[]) {
 				cgiHeaderStatus(500, "Error reading form data");
 				cgiFreeResources();
 				return -1;
-			}	
+			}
 #ifdef CGICDEBUG
 			CGICDEBUGSTART
 			fprintf(dout, "PostMultipartInput succeeded\n");
@@ -284,7 +283,7 @@ int main(int argc, char *argv[]) {
 			cgiHeaderStatus(500, "Error reading form data");
 			cgiFreeResources();
 			return -1;
-		} else {	
+		} else {
 #ifdef CGICDEBUG
 			CGICDEBUGSTART
 			fprintf(dout, "GetFormInput succeeded\n");
@@ -315,15 +314,15 @@ static cgiParseResultType cgiParsePostFormInput() {
 	if (!cgiContentLength) {
 		return cgiParseSuccess;
 	}
-	input = (char *) malloc(cgiContentLength);
+	input = (char*)malloc(cgiContentLength);
 	if (!input) {
 		return cgiParseMemory;	
 	}
-	if (((int) fread(input, 1, cgiContentLength, cgiIn)) 
+	if (((int)fread(input, 1, cgiContentLength, cgiIn)) 
 		!= cgiContentLength) 
 	{
 		return cgiParseIO;
-	}	
+	}
 	result = cgiParseFormInput(input, cgiContentLength);
 	free(input);
 	return result;
@@ -368,7 +367,7 @@ int mpRead(mpStreamPtr mpp, char *buffer, int len)
 			len--;
 		} else {
 			break;
-		}	
+		}
 	}
 	if (len) {
 		int fgot = fread(buffer, 1, len, cgiIn);
@@ -531,10 +530,10 @@ static cgiParseResultType cgiParsePostMultipartInput() {
 		if (strlen(ffileName)) {
 			if (getTempFile(&outf) != cgiParseSuccess) {
 				return cgiParseIO;
-			}	
+			}
 		} else {
 			outf = 0;
-		}	
+		}
 		result = afterNextBoundary(mpp, outf, &out, &bodyLength, 0);
 		if (result != cgiParseSuccess) {
 			/* Lack of a boundary here is an error. */
@@ -547,14 +546,13 @@ static cgiParseResultType cgiParsePostMultipartInput() {
 			return result;
 		}
 		/* OK, we have a new pair, add it to the list. */
-		n = (cgiFormEntry *) malloc(sizeof(cgiFormEntry));	
+		n = (cgiFormEntry*)calloc(1, sizeof(cgiFormEntry));	
 		if (!n) {
 			goto outOfMemory;
 		}
-		memset(n, 0, sizeof(cgiFormEntry));
 		/* 2.01: one of numerous new casts required
 			to please C++ compilers */
-		n->attr = (char *) malloc(strlen(fname) + 1);
+		n->attr = (char*)malloc(strlen(fname) + 1);
 		if (!n->attr) {
 			goto outOfMemory;
 		}
@@ -563,11 +561,10 @@ static cgiParseResultType cgiParsePostMultipartInput() {
 			n->value = out;
 			out = 0;
 		} else if (outf) {
-			n->value = (char *) malloc(1);
+			n->value = (char*)calloc(1, sizeof(char));
 			if (!n->value) {
 				goto outOfMemory;
 			}
-			n->value[0] = '\0';
 		}
 		n->valueLength = bodyLength;
 		n->next = 0;
@@ -576,25 +573,25 @@ static cgiParseResultType cgiParsePostMultipartInput() {
 		} else {
 			l->next = n;
 		}
-		n->fileName = (char *) malloc(strlen(ffileName) + 1);
+		n->fileName = (char*)malloc(strlen(ffileName) + 1);
 		if (!n->fileName) {
 			goto outOfMemory;
 		}
 		strcpy(n->fileName, ffileName);
-		n->contentType = (char *) malloc(strlen(fcontentType) + 1);
+		n->contentType = (char*)malloc(strlen(fcontentType) + 1);
 		if (!n->contentType) {
 			goto outOfMemory;
 		}
 		strcpy(n->contentType, fcontentType);
-	
+
 		if(outf)
 		{
-			n->tFile = fdopen (dup (fileno (outf)), "w+b");
+			n->tFile = fdopen(dup(fileno(outf)), "w+b");
 			fclose(outf);
 		}
 
 		l = n;			
-	}	
+	}
 	return cgiParseSuccess;
 outOfMemory:
 	if (n) {
@@ -676,10 +673,10 @@ static cgiParseResultType getTempFile(FILE **tFile)
 
 #define RAPPEND(string, ch) \
 	{ \
-		if ((string##Len + 1) == string##Space)  { \
+		if ((string##Len + 1) == string##Space) { \
 			char *sold = string; \
 			string##Space *= 2; \
-			string = (char *) realloc(string, string##Space); \
+			string = (char*)realloc(string, string##Space); \
 			if (!string) { \
 				string = sold; \
 				goto outOfMemory; \
@@ -716,7 +713,7 @@ cgiParseResultType afterNextBoundary(mpStreamPtr mpp, FILE *outf, char **outP,
 	char *workingBoundary = workingBoundaryData;
 	int workingBoundaryLength;
 	if ((!outf) && (outP)) {
-		out = (char *) malloc(outSpace);
+		out = (char*)malloc(outSpace);
 		if (!out) {
 			goto outOfMemory;
 		}
@@ -741,7 +738,7 @@ cgiParseResultType afterNextBoundary(mpStreamPtr mpp, FILE *outf, char **outP,
 			boffset++;
 			if (boffset == workingBoundaryLength) {
 				break;
-			} 
+			}
 		} else if (boffset > 0) {
 			/* We matched part, but not all, of the
 				boundary. Now we have to be careful:
@@ -770,18 +767,18 @@ cgiParseResultType afterNextBoundary(mpStreamPtr mpp, FILE *outf, char **outP,
 	if (got != 2) {
 		result = cgiParseIO;
 		goto error;
-	}	
+	}
 	if ((d[0] == '\r') && (d[1] == '\n')) {
 		/* OK, EOL */
 	} else if (d[0] == '-') {
 		/* Probably EOF, but we check for
 			that later */
 		mpPutBack(mpp, d, 2);
-	}	
+	}
 	if (out && outSpace) {
 		char *oout = out;
 		out[outLen] = '\0';
-		out = (char *) realloc(out, outLen + 1);
+		out = (char*)realloc(out, outLen + 1);
 		if (!out) {
 			/* Surprising if it happens; and not fatal! We were
 				just trying to give some space back. We can
@@ -851,8 +848,8 @@ static void decomposeValue(char *value,
 		while ((*value) && (*value != ';')) {
 			APPEND(mvalue, *value);
 			value++;
-		}	
-	}	
+		}
+	}
 	if (mvalueSpace) {
 		mvalue[mvalueLen] = '\0';
 	}
@@ -894,7 +891,7 @@ static void decomposeValue(char *value,
 				break;
 			}
 			argNum++;
-		}		
+		}
 		/* Finally, read the parameter value */
 		if (*value == '\"') {
 			value++;
@@ -914,14 +911,14 @@ static void decomposeValue(char *value,
 					APPEND(argValue, *value);
 				}
 				value++;
-			}	
-		}	
+			}
+		}
 		if (argValueSpace) {
 			if (argValue) {
 				argValue[argValueLen] = '\0';
 			}
 		}
-	}	 	
+	}
 }
 
 static int readHeaderLine(
@@ -958,14 +955,14 @@ static int readHeaderLine(
 				if (!isspace(d[0])) {
 					mpPutBack(mpp, d, 1);
 					break;
-				} 
+				}
 			}
 		} else if (!valueFound) {
 			if (!isspace(*d)) {
 				if (attrLen < (attrSpace - 1)) {
 					attr[attrLen++] = *d;
 				}
-			}		
+			}
 		} else if (valueFound) {	
 			if (valueLen < (valueSpace - 1)) {
 				value[valueLen++] = *d;
@@ -1032,7 +1029,7 @@ static cgiParseResultType cgiParseFormInput(char *data, int length) {
 		if (cgiUnescapeChars(&attr, data+start, len)
 			!= cgiUnescapeSuccess) {
 			return cgiParseMemory;
-		}	
+		}
 		start = pos;
 		len = 0;
 		while (pos != length) {
@@ -1050,9 +1047,9 @@ static cgiParseResultType cgiParseFormInput(char *data, int length) {
 			!= cgiUnescapeSuccess) {
 			free(attr);
 			return cgiParseMemory;
-		}	
+		}
 		/* OK, we have a new pair, add it to the list. */
-		n = (cgiFormEntry *) malloc(sizeof(cgiFormEntry));	
+		n = (cgiFormEntry*)malloc(sizeof(cgiFormEntry));	
 		if (!n) {
 			free(attr);
 			free(value);
@@ -1061,23 +1058,21 @@ static cgiParseResultType cgiParseFormInput(char *data, int length) {
 		n->attr = attr;
 		n->value = value;
 		n->valueLength = strlen(n->value);
-		n->fileName = (char *) malloc(1);
+		n->fileName = (char*)calloc(1, sizeof(char));
 		if (!n->fileName) {
 			free(attr);
 			free(value);
 			free(n);
 			return cgiParseMemory;
-		}	
-		n->fileName[0] = '\0';
-		n->contentType = (char *) malloc(1);
+		}
+		n->contentType = (char*)calloc(1, sizeof(char));
 		if (!n->contentType) {
 			free(attr);
 			free(value);
 			free(n->fileName);
 			free(n);
 			return cgiParseMemory;
-		}	
-		n->contentType[0] = '\0';
+		}
 		n->next = 0;
 		if (!l) {
 			cgiFormEntryFirst = n;
@@ -1087,7 +1082,7 @@ static cgiParseResultType cgiParseFormInput(char *data, int length) {
 		l = n;
 		if (!foundAmp) {
 			break;
-		}			
+		}
 	}
 	return cgiParseSuccess;
 }
@@ -1100,7 +1095,7 @@ cgiUnescapeResultType cgiUnescapeChars(char **sp, char *cp, int len) {
 	int escapedValue = 0;
 	int srcPos = 0;
 	int dstPos = 0;
-	s = (char *) malloc(len + 1);
+	s = (char*)malloc(len + 1);
 	if (!s) {
 		return cgiUnescapeMemory;
 	}
@@ -1131,7 +1126,7 @@ cgiUnescapeResultType cgiUnescapeChars(char **sp, char *cp, int len) {
 	s[dstPos] = '\0';
 	*sp = s;
 	return cgiUnescapeSuccess;
-}		
+}
 	
 static void cgiSetupConstants() {
 	int i;
@@ -1238,13 +1233,13 @@ cgiFormResultType cgiFormFileName(
 	while (*s) {
 		APPEND(result, *s);
 		s++;
-	}	
+	}
 	if (resultSpace) {
 		result[resultLen] = '\0';
 	}
 	if (!strlen(e->fileName)) {
 		return cgiFormNoFileName;
-	} else if (((int) strlen(e->fileName)) > (resultSpace - 1)) {
+	} else if (((int)strlen(e->fileName)) > (resultSpace - 1)) {
 		return cgiFormTruncated;
 	} else {
 		return cgiFormSuccess;
@@ -1261,20 +1256,20 @@ cgiFormResultType cgiFormFileContentType(
 	if (!e) {
 		if (resultSpace) {
 			result[0] = '\0';
-		}	
+		}
 		return cgiFormNotFound;
 	}
 	s = e->contentType;
 	while (*s) {
 		APPEND(result, *s);
 		s++;
-	}	
+	}
 	if (resultSpace) {
 		result[resultLen] = '\0';
 	}
 	if (!strlen(e->contentType)) {
 		return cgiFormNoContentType;
-	} else if (((int) strlen(e->contentType)) > (resultSpace - 1)) {
+	} else if (((int)strlen(e->contentType)) > (resultSpace - 1)) {
 		return cgiFormTruncated;
 	} else {
 		return cgiFormSuccess;
@@ -1322,7 +1317,7 @@ cgiFormResultType cgiFormFileOpen(
 		*cfpp = 0;
 		return cgiFormNotAFile;
 	}
-	cfp = (cgiFilePtr) malloc(sizeof(cgiFile));
+	cfp = (cgiFilePtr)malloc(sizeof(cgiFile));
 	if (!cfp) {
 		*cfpp = 0;
 		return cgiFormMemory;
@@ -1389,7 +1384,7 @@ cgiFormResultType cgiFormStringMultiple(
 			total++;
 		} while ((e = cgiFormEntryFindNext()) != 0); 
 	}
-	stringArray = (char **) malloc(sizeof(char *) * (total + 1));
+	stringArray = (char**)malloc(sizeof(char*) * (total + 1));
 	if (!stringArray) {
 		*result = 0;
 		return cgiFormMemory;
@@ -1408,14 +1403,14 @@ cgiFormResultType cgiFormStringMultiple(
 	if (e) {
 		i = 0;
 		do {
-			int max = (int) (strlen(e->value) + 1);
-			stringArray[i] = (char *) malloc(max);
+			int max = (int)(strlen(e->value) + 1);
+			stringArray[i] = (char*)malloc(max);
 			if (stringArray[i] == 0) {
 				/* Memory problems */
 				cgiStringArrayFree(stringArray);
 				*result = 0;
 				return cgiFormMemory;
-			}	
+			}
 			strcpy(stringArray[i], e->value);
 			cgiFormEntryString(e, stringArray[i], max, 1);
 			i++;
@@ -1435,7 +1430,7 @@ cgiFormResultType cgiFormStringMultiple(
 		CGICDEBUGEND
 #endif /* CGICDEBUG */
 		return cgiFormNotFound;
-	}	
+	}
 }
 
 cgiFormResultType cgiFormStringSpaceNeeded(
@@ -1446,7 +1441,7 @@ cgiFormResultType cgiFormStringSpaceNeeded(
 		*result = 1;
 		return cgiFormNotFound; 
 	}
-	*result = ((int) strlen(e->value)) + 1;
+	*result = ((int)strlen(e->value)) + 1;
 	return cgiFormSuccess;
 }
 
@@ -1479,7 +1474,7 @@ static cgiFormResultType cgiFormEntryString(
 				crCount++;
 			} else {
 				lfCount++;
-			}	
+			}
 		} else {
 			if (crCount || lfCount) {
 				int lfsAdd = crCount;
@@ -1506,7 +1501,7 @@ static cgiFormResultType cgiFormEntryString(
 			if (ch == '\0') {
 				/* The end of the source string */
 				break;				
-			}	
+			}
 			/* 1.06: check available space before adding
 				the character, because a previously added
 				LF may have brought us to the limit */
@@ -1519,7 +1514,7 @@ static cgiFormResultType cgiFormEntryString(
 			len++;
 		}
 		sp++;	
-	}	
+	}
 	*dp = '\0';
 	if (truncated) {
 		return cgiFormTruncated;
@@ -1540,7 +1535,7 @@ cgiFormResultType cgiFormInteger(
 	if (!e) {
 		*result = defaultV;
 		return cgiFormNotFound; 
-	}	
+	}
 	if (!strlen(e->value)) {
 		*result = defaultV;
 		return cgiFormEmpty;
@@ -1564,11 +1559,11 @@ cgiFormResultType cgiFormIntegerBounded(
 	if (*result < min) {
 		*result = min;
 		return cgiFormConstrained;
-	} 
+	}
 	if (*result > max) {
 		*result = max;
 		return cgiFormConstrained;
-	} 
+	}
 	return cgiFormSuccess;
 }
 
@@ -1580,11 +1575,11 @@ cgiFormResultType cgiFormDouble(
 	if (!e) {
 		*result = defaultV;
 		return cgiFormNotFound; 
-	}	
+	}
 	if (!strlen(e->value)) {
 		*result = defaultV;
 		return cgiFormEmpty;
-	} 
+	}
 	ch = cgiFirstNonspaceChar(e->value);
 	if (!(isdigit(ch)) && (ch != '.') && (ch != '-') && (ch != '+')) {
 		*result = defaultV;
@@ -1604,11 +1599,11 @@ cgiFormResultType cgiFormDoubleBounded(
 	if (*result < min) {
 		*result = min;
 		return cgiFormConstrained;
-	} 
+	}
 	if (*result > max) {
 		*result = max;
 		return cgiFormConstrained;
-	} 
+	}
 	return cgiFormSuccess;
 }
 
@@ -1621,7 +1616,7 @@ cgiFormResultType cgiFormSelectSingle(
 	e = cgiFormEntryFindFirst(name);
 #ifdef CGICDEBUG
 	CGICDEBUGSTART
-	fprintf(dout, "%d\n", (int) e);
+	fprintf(dout, "%p\n", e);
 	CGICDEBUGEND
 #endif /* CGICDEBUG */
 	if (!e) {
@@ -1779,7 +1774,7 @@ cgiFormResultType cgiCookieString(
 			/* Allow whitespace after semicolon */
 			while ((*p) && isspace(*p)) {
 				p++;
-			} 
+			}
 		}
 	}
 	/* 2.01: actually the above loop never terminates except
@@ -2003,7 +1998,7 @@ cgiEnvironmentResultType cgiWriteEnvironment(char *filename) {
 			while (cgiFormFileRead(fp, buffer, 
 				sizeof(buffer), &got) == cgiFormSuccess)
 			{
-				if (((int) fwrite(buffer, 1, got, out)) != got) {
+				if (((int)fwrite(buffer, 1, got, out)) != got) {
 					cgiFormFileClose(fp);
 					goto error;
 				}
@@ -2030,9 +2025,9 @@ error:
 }
 
 static int cgiWriteString(FILE *out, char *s) {
-	int len = (int) strlen(s);
+	int len = (int)strlen(s);
 	cgiWriteInt(out, len);
-	if (((int) fwrite(s, 1, len, out)) != len) {
+	if (((int)fwrite(s, 1, len, out)) != len) {
 		return 0;
 	}
 	return 1;
@@ -2070,7 +2065,7 @@ cgiEnvironmentResultType cgiReadEnvironment(char *filename) {
 		/* 2.02: Merezko Oleg */
 		free(version);
 		return cgiEnvironmentWrongVersion;
-	}	
+	}
 	/* 2.02: Merezko Oleg */
 	free(version);
 	if (!cgiReadString(in, &cgiServerSoftware)) {
@@ -2140,13 +2135,12 @@ cgiEnvironmentResultType cgiReadEnvironment(char *filename) {
 	p = 0;
 	while (1) {
 		int fileFlag;
-		e = (cgiFormEntry *) calloc(1, sizeof(cgiFormEntry));
+		e = (cgiFormEntry*)calloc(1, sizeof(cgiFormEntry));
 		if (!e) {
 			cgiFreeResources();
 			fclose(in);
 			return cgiEnvironmentMemory;
 		}
-		memset(e, 0, sizeof(cgiFormEntry));
 		if (!cgiReadString(in, &e->attr)) {
 			/* This means we've reached the end of the list. */
 			/* 2.02: thanks to Merezko Oleg */
@@ -2184,7 +2178,7 @@ cgiEnvironmentResultType cgiReadEnvironment(char *filename) {
 					C++, and it wasn't being used
 					properly either */
 				int tryr = len;
-				if (tryr > ((int) sizeof(buffer))) {
+				if (tryr > ((int)sizeof(buffer))) {
 					tryr = sizeof(buffer);
 				}
 				got = fread(buffer, 1, tryr, in);
@@ -2193,7 +2187,7 @@ cgiEnvironmentResultType cgiReadEnvironment(char *filename) {
 					fclose(out);
 					goto error;
 				}
-				if (((int) fwrite(buffer, 1, got, out)) != got) {
+				if (((int)fwrite(buffer, 1, got, out)) != got) {
 					result = cgiEnvironmentIO;
 					fclose(out);
 					goto error;
@@ -2204,13 +2198,13 @@ cgiEnvironmentResultType cgiReadEnvironment(char *filename) {
 			e->tFile = out;
 		} else {
 			e->tFile = NULL;
-		}	
+		}
 		e->next = 0;
 		if (p) {
 			p->next = e;
 		} else {
 			cgiFormEntryFirst = e;
-		}	
+		}
 		p = e;
 	}
 	fclose(in);
@@ -2248,11 +2242,11 @@ static int cgiReadString(FILE *in, char **s) {
 	if (!cgiReadInt(in, &len)) {
 		return 0;
 	}
-	*s = (char *) malloc(len + 1);
+	*s = (char*)malloc(len + 1);
 	if (!(*s)) {
 		return 0;
-	}	
-	if (((int) fread(*s, 1, len, in)) != len) {
+	}
+	if (((int)fread(*s, 1, len, in)) != len) {
 		return 0;
 	}
 	(*s)[len] = '\0';
@@ -2344,7 +2338,7 @@ void cgiStringArrayFree(char **stringArray) {
 	}
 	/* 2.0: free the array itself! */
 	free(arrayItself);
-}	
+}
 
 cgiFormResultType cgiCookies(char ***result) {
 	char **stringArray;
@@ -2359,7 +2353,7 @@ cgiFormResultType cgiCookies(char ***result) {
 		}
 		p++;
 	}
-	stringArray = (char **) malloc(sizeof(char *) * (total + 1));
+	stringArray = (char**)malloc(sizeof(char*) * (total + 1));
 	if (!stringArray) {
 		*result = 0;
 		return cgiFormMemory;
@@ -2379,12 +2373,12 @@ cgiFormResultType cgiCookies(char ***result) {
 			p++;
 		}
 		if (p != n) {
-			stringArray[i] = (char *) malloc((p - n) + 1);
+			stringArray[i] = (char*)malloc((p - n) + 1);
 			if (!stringArray[i]) {
 				cgiStringArrayFree(stringArray);
 				*result = 0;
 				return cgiFormMemory;
-			}	
+			}
 			memcpy(stringArray[i], n, p - n);
 			stringArray[i][p - n] = '\0';
 			i++;
@@ -2423,7 +2417,7 @@ cgiFormResultType cgiFormEntries(char ***result) {
 skipSecondValue:
 		e = e->next;
 	}
-	stringArray = (char **) malloc(sizeof(char *) * (total + 1));
+	stringArray = (char**)malloc(sizeof(char*) * (total + 1));
 	if (!stringArray) {
 		*result = 0;
 		return cgiFormMemory;
@@ -2445,15 +2439,15 @@ skipSecondValue:
 				goto skipSecondValue2;
 			}
 			pe = pe->next;					
-		}		
+		}
 		space = strlen(e->attr) + 1;
-		stringArray[i] = (char *) malloc(space);
+		stringArray[i] = (char*)malloc(space);
 		if (stringArray[i] == 0) {
 			/* Memory problems */
 			cgiStringArrayFree(stringArray);
 			*result = 0;
 			return cgiFormMemory;
-		}	
+		}
 		strcpy(stringArray[i], e->attr);
 		i++;
 skipSecondValue2:
@@ -2468,7 +2462,7 @@ skipSecondValue2:
 		if (putc((ch), cgiOut) == EOF) { \
 			return cgiFormIO; \
 		} \
-	} 
+	}
 
 cgiFormResultType cgiHtmlEscapeData(const char *data, int len)
 {
@@ -2499,7 +2493,7 @@ cgiFormResultType cgiHtmlEscapeData(const char *data, int len)
 
 cgiFormResultType cgiHtmlEscape(const char *s)
 {
-	return cgiHtmlEscapeData(s, (int) strlen(s));
+	return cgiHtmlEscapeData(s, (int)strlen(s));
 }
 
 /* Output data with the " character HTML-escaped, and no
@@ -2527,7 +2521,7 @@ cgiFormResultType cgiValueEscapeData(const char *data, int len)
 
 cgiFormResultType cgiValueEscape(const char *s)
 {
-	return cgiValueEscapeData(s, (int) strlen(s));
+	return cgiValueEscapeData(s, (int)strlen(s));
 }
 
 

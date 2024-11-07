@@ -4,7 +4,7 @@
 #define SERVER_NAME cgiServerName
 #endif
 #if 0
-#define SERVER_NAME "www.boutell.dev"
+#define SERVER_NAME "venovako.eu"
 #endif
 
 /* You may need to change this, particularly under Windows;
@@ -154,13 +154,13 @@ char *flavors[] = {
 void Flavors() {
 	int flavorChoices[3];
 	int i;
-	int result;	
+	int result;
 	int invalid;
 	result = cgiFormSelectMultiple("flavors", flavors, 3, 
 		flavorChoices, &invalid);
 	if (result == cgiFormNotFound) {
 		fprintf(cgiOut, "I hate ice cream.<p>\n");
-	} else {	
+	} else {
 		fprintf(cgiOut, "My favorite ice cream flavors are:\n");
 		fprintf(cgiOut, "<ul>\n");
 		for (i=0; (i < 3); i++) {
@@ -211,7 +211,7 @@ char *votes[] = {
 void NonExButtons() {
 	int voteChoices[4];
 	int i;
-	int result;	
+	int result;
 	int invalid;
 
 	char **responses;
@@ -224,7 +224,7 @@ void NonExButtons() {
 		voteChoices, &invalid);
 	if (result == cgiFormNotFound) {
 		fprintf(cgiOut, "I hate them all!<p>\n");
-	} else {	
+	} else {
 		fprintf(cgiOut, "My preferred candidates are:\n");
 		fprintf(cgiOut, "<ul>\n");
 		for (i=0; (i < 4); i++) {
@@ -241,7 +241,7 @@ void NonExButtons() {
 		or can be checked in some other way. */
 	fprintf(cgiOut, "Votes (method 2):<BR>\n");
 	result = cgiFormStringMultiple("vote", &responses);
-	if (result == cgiFormNotFound) {	
+	if (result == cgiFormNotFound) {
 		fprintf(cgiOut, "I hate them all!<p>\n");
 	} else {
 		int i = 0;
@@ -302,16 +302,16 @@ void Cookies()
 		arrayStep++;
 	}
 	fprintf(cgiOut, "</table>\n");
-	cgiFormString("cname", cname, sizeof(cname));	
-	cgiFormString("cvalue", cvalue, sizeof(cvalue));	
+	cgiFormString("cname", cname, sizeof(cname));
+	cgiFormString("cvalue", cvalue, sizeof(cvalue));
 	if (strlen(cname)) {
 		fprintf(cgiOut, "New Cookie Set On This Call:<p>\n");
-		fprintf(cgiOut, "Name: ");	
+		fprintf(cgiOut, "Name: ");
 		cgiHtmlEscape(cname);
-		fprintf(cgiOut, "Value: ");	
+		fprintf(cgiOut, "Value: ");
 		cgiHtmlEscape(cvalue);
 		fprintf(cgiOut, "<p>\n");
-		fprintf(cgiOut, "If your browser accepts cookies (many do not), this new cookie should appear in the above list the next time the form is submitted.<p>\n"); 
+		fprintf(cgiOut, "If your browser accepts cookies (many do not), this new cookie should appear in the above list the next time the form is submitted.<p>\n");
 	}
 	cgiStringArrayFree(array);
 }
@@ -429,8 +429,8 @@ void CookieSet()
 	char cname[1024];
 	char cvalue[1024];
 	/* Must set cookies BEFORE calling cgiHeaderContentType */
-	cgiFormString("cname", cname, sizeof(cname));	
-	cgiFormString("cvalue", cvalue, sizeof(cvalue));	
+	cgiFormString("cname", cname, sizeof(cname));
+	cgiFormString("cvalue", cvalue, sizeof(cvalue));
 	if (strlen(cname)) {
 		/* Cookie lives for one day (or until browser chooses
 			to get rid of it, which may be immediately),
@@ -477,4 +477,3 @@ void SaveEnvironment()
 			"name=\"loadenvironment\"></form><p>\n");
 	}
 }
-

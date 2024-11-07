@@ -101,10 +101,8 @@ extern cgiFormResultType cgiFormString(
 extern cgiFormResultType cgiFormStringNoNewlines(
 	char *name, char *result, int max);
 
-
 extern cgiFormResultType cgiFormStringSpaceNeeded(
 	char *name, int *length);
-
 
 extern cgiFormResultType cgiFormStringMultiple(
 	char *name, char ***ptrToStringArray);
@@ -125,8 +123,7 @@ extern cgiFormResultType cgiFormDoubleBounded(
 
 extern cgiFormResultType cgiFormSelectSingle(
 	char *name, char **choicesText, int choicesTotal, 
-	int *result, int defaultV);	
-
+	int *result, int defaultV);
 
 extern cgiFormResultType cgiFormSelectMultiple(
 	char *name, char **choicesText, int choicesTotal, 
@@ -144,7 +141,7 @@ extern cgiFormResultType cgiFormCheckboxMultiple(
 
 extern cgiFormResultType cgiFormRadio(
 	char *name, char **valuesText, int valuesTotal, 
-	int *result, int defaultV);	
+	int *result, int defaultV);
 
 /* The paths returned by this function are the original names of files
 	as reported by the uploading web browser and should NOT be
@@ -246,4 +243,3 @@ cgiFormResultType cgiValueEscapeData(const char *data, int len);
 #endif /* __cplusplus */
 
 #endif /* CGI_C */
-

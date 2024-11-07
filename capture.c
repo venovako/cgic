@@ -9,3 +9,8 @@ int cgiMain() {
 	fprintf(cgiOut, "debugging CGI code.\n");
 	return 0;
 }
+
+int main(int argc, char *argv[])
+{
+  return cgicMain(argc, argv);
+}

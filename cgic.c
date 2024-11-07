@@ -121,9 +121,15 @@ static int cgiStrBeginsNc(char *s1, char *s2);
 
 #ifdef UNIT_TEST
 static int unitTest();
-#endif
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
+  return cgicMain(argc, argv);
+}
+#endif /* UNIT_TEST */
+
+int cgicMain(int argc, char *argv[])
+{
 	int result;
 	char *cgiContentLengthString;
 	char *e;
@@ -210,17 +216,6 @@ int main(int argc, char *argv[]) {
 	cgiOut = stdout;
 	cgiRestored = 0;
 
-
-	/* These five lines keep compilers from
-		producing warnings that argc and argv
-		are unused. They have no actual function. */
-	if (argc) {
-		if (argv[0]) {
-			cgiRestored = 0;
-		}
-	}
-
-
 	if (cgiStrEqNc(cgiRequestMethod, "post")) {
 #ifdef CGICDEBUG
 		CGICDEBUGSTART
@@ -294,11 +289,12 @@ int main(int argc, char *argv[]) {
 #ifdef UNIT_TEST
 	unitTest();
 	cgiFreeResources();
-	return 0;
+        result = ((argc <= 0) || !argv);
 #else
-	result = cgiMain();
-	return result;
+        if (!(result = ((argc <= 0) || !argv)))
+          result = cgiMain();
 #endif
+        return result;
 }
 
 static void cgiGetenv(char **s, char *var){

@@ -477,3 +477,8 @@ void SaveEnvironment()
 			"name=\"loadenvironment\"></form><p>\n");
 	}
 }
+
+int main(int argc, char *argv[])
+{
+  return cgicMain(argc, argv);
+}

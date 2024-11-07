@@ -22,17 +22,17 @@ libcgic.a: cgic.o cgic.h
 	$(RANLIB) libcgic.a
 
 #mingw32 and cygwin users: replace .cgi with .exe
-#static link: add -static -s
+#static link on Linux: add -static -s
 
 cgictest.cgi: cgictest.o libcgic.a
-	gcc cgictest.o -o cgictest.cgi ${LIBS}
+	$(CC) $(CFLAGS) cgictest.o -o cgictest.cgi ${LIBS}
 
 capture: capture.o libcgic.a
-	gcc capture.o -o capture ${LIBS}
+	$(CC) $(CFLAGS) capture.o -o capture ${LIBS}
 
 clean:
 	rm -f *.o *.a cgictest.cgi capture cgicunittest
 
 test:
-	gcc -D UNIT_TEST=1 cgic.c -o cgicunittest
+	$(CC) $(CFLAGS) -DUNIT_TEST cgic.c -o cgicunittest
 	./cgicunittest

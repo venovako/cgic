@@ -10,7 +10,10 @@ PROGRAM CGIFTEST
        INTEGER(KIND=c_int) :: CGICMAIN
      END FUNCTION CGICMAIN
   END INTERFACE
+  ! TODO: this supposes that strlen(argv[0]) <= 255
   CHARACTER(LEN=256,KIND=c_char), TARGET :: ARGV0
+  ! This is just a demo, so only send argv[0], since the
+  ! command-line arguments are not used in cgic anyway.
   TYPE(c_ptr) :: ARGV(1)
   INTEGER :: RET
   CALL GET_COMMAND(COMMAND=ARGV0, STATUS=RET)

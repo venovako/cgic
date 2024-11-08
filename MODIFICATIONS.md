@@ -1,6 +1,6 @@
 # Modifications of the original source code
 
-Some whitespace cleanup.
+Some hardcoded paths changed and whitespace cleaned up.
 
 Wherever sensible, `malloc()` has been replaced by `calloc()`, and the subsequent `memset()` calls have been removed.
 

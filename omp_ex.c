@@ -9,13 +9,14 @@ int cgiMain()
 {
   int ret = EXIT_SUCCESS;
   cgiHeaderContentType("text/html");
-  (void)fprintf(cgiOut, "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"UTF-8\">\n<title>omp_display_env(true)</title>\n</head>\n<body>\n<pre>");
+  (void)fprintf(cgiOut, "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"UTF-8\">\n<title>OpenMP environment</title>\n</head>\n<body>\n<pre>");
 #ifdef _OPENMP
   /* this assumes that omp_display_env() writes to stderr */
   FILE *old = stderr;
   stderr = stdout;
   omp_display_env(1);
   stderr = old;
+  (void)fprintf(cgiOut, "omp_get_max_threads() = %d\n", omp_get_max_threads());
 #else /* !_OPENMP */
   (void)fprintf(cgiOut, "OpenMP is not enabled.\n");
   ret = EXIT_FAILURE;

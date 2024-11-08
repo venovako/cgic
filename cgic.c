@@ -193,7 +193,7 @@ int cgicMain(int argc, char *argv[])
 		}
 	}
 	cgiGetenv(&cgiContentLengthString, "CONTENT_LENGTH");
-	cgiContentLength = atoi(cgiContentLengthString);	
+	cgiContentLength = atoi(cgiContentLengthString);
 	cgiGetenv(&cgiAccept, "HTTP_ACCEPT");
 	cgiGetenv(&cgiUserAgent, "HTTP_USER_AGENT");
 	cgiGetenv(&cgiReferrer, "HTTP_REFERER");
@@ -312,7 +312,7 @@ static cgiParseResultType cgiParsePostFormInput() {
 	}
 	input = (char*)malloc(cgiContentLength);
 	if (!input) {
-		return cgiParseMemory;	
+		return cgiParseMemory;
 	}
 	if (((int)fread(input, 1, cgiContentLength, cgiIn)) 
 		!= cgiContentLength) 
@@ -330,7 +330,7 @@ static cgiParseResultType cgiParsePostFormInput() {
 
 typedef struct {
 	/* Buffer for putting characters back */
-	char putback[1024];	
+	char putback[1024];
 	/* Position in putback from which next character will be read.
 		If readPos == writePos, then next character should
 		come from cgiIn. */
@@ -498,7 +498,7 @@ static cgiParseResultType cgiParsePostMultipartInput() {
 					fvalue, sizeof(fvalue),
 					argNames,
 					argValues,
-					1024);	
+					1024);
 			} else if (cgiStrEqNc(attr, "Content-Type")) {
 				argNames[0] = 0;
 				decomposeValue(value, 
@@ -542,7 +542,7 @@ static cgiParseResultType cgiParsePostMultipartInput() {
 			return result;
 		}
 		/* OK, we have a new pair, add it to the list. */
-		n = (cgiFormEntry*)calloc(1, sizeof(cgiFormEntry));	
+		n = (cgiFormEntry*)calloc(1, sizeof(cgiFormEntry));
 		if (!n) {
 			goto outOfMemory;
 		}
@@ -586,7 +586,7 @@ static cgiParseResultType cgiParsePostMultipartInput() {
 			fclose(outf);
 		}
 
-		l = n;			
+		l = n;
 	}
 	return cgiParseSuccess;
 outOfMemory:
@@ -636,7 +636,7 @@ static cgiParseResultType getTempFile(FILE **tFile)
 		window between the file's creation and the
 		chmod call (glibc 2.0.6 and lower might
 		otherwise have allowed this). */
-	int outfd; 
+	int outfd;
 	strcpy(tfileName, cgicTempDir "/cgicXXXXXX");
 	outfd = mkstemp(tfileName);
 	if (outfd == -1) {
@@ -700,7 +700,7 @@ cgiParseResultType afterNextBoundary(mpStreamPtr mpp, FILE *outf, char **outP,
 	cgiParseResultType result;
 	int boffset;
 	int got;
-	char d[2];	
+	char d[2];
 	/* This is large enough, because the buffer into which the
 		original boundary string is fetched is shorter by more
 		than four characters due to the space required for
@@ -753,7 +753,7 @@ cgiParseResultType afterNextBoundary(mpStreamPtr mpp, FILE *outf, char **outP,
 				match; just emit the character. */
 			BAPPEND(d[0]);
 		}
-		if(outLen > cgicMaxTempSize) {
+		if (outLen > cgicMaxTempSize) {
 			goto outOfMemory;
 		}
 	}
@@ -793,7 +793,7 @@ outOfMemory:
 		if (out) {
 			free(out);
 		}
-		*outP = 0;	
+		*outP = 0;
 	}
 error:
 	if (bodyLengthP) {
@@ -803,7 +803,7 @@ error:
 		free(out);
 	}
 	if (outP) {
-		*outP = 0;	
+		*outP = 0;
 	}
 	return result;
 }
@@ -872,7 +872,7 @@ static void decomposeValue(char *value,
 		}
 		if (*value != '=') {
 			/* Malformed line */
-			return;	
+			return;
 		}
 		value++;
 		while ((*value) && isspace(*value)) {
@@ -1045,7 +1045,7 @@ static cgiParseResultType cgiParseFormInput(char *data, int length) {
 			return cgiParseMemory;
 		}
 		/* OK, we have a new pair, add it to the list. */
-		n = (cgiFormEntry*)malloc(sizeof(cgiFormEntry));	
+		n = (cgiFormEntry*)malloc(sizeof(cgiFormEntry));
 		if (!n) {
 			free(attr);
 			free(value);
@@ -1104,11 +1104,11 @@ cgiUnescapeResultType cgiUnescapeChars(char **sp, char *cp, int len) {
 			} else if (ch == '+') {
 				s[dstPos++] = ' ';
 			} else {
-				s[dstPos++] = ch;	
+				s[dstPos++] = ch;
 			}
 			break;
 			case cgiEscapeFirst:
-			escapedValue = cgiHexValue[ch] << 4;	
+			escapedValue = cgiHexValue[ch] << 4;
 			escapeState = cgiEscapeSecond;
 			break;
 			case cgiEscapeSecond:
@@ -1129,15 +1129,15 @@ static void cgiSetupConstants() {
 	for (i=0; (i < 256); i++) {
 		cgiHexValue[i] = 0;
 	}
-	cgiHexValue['0'] = 0;	
-	cgiHexValue['1'] = 1;	
-	cgiHexValue['2'] = 2;	
-	cgiHexValue['3'] = 3;	
-	cgiHexValue['4'] = 4;	
-	cgiHexValue['5'] = 5;	
-	cgiHexValue['6'] = 6;	
-	cgiHexValue['7'] = 7;	
-	cgiHexValue['8'] = 8;	
+	cgiHexValue['0'] = 0;
+	cgiHexValue['1'] = 1;
+	cgiHexValue['2'] = 2;
+	cgiHexValue['3'] = 3;
+	cgiHexValue['4'] = 4;
+	cgiHexValue['5'] = 5;
+	cgiHexValue['6'] = 6;
+	cgiHexValue['7'] = 7;
+	cgiHexValue['8'] = 8;
 	cgiHexValue['9'] = 9;
 	cgiHexValue['A'] = 10;
 	cgiHexValue['B'] = 11;
@@ -1378,7 +1378,7 @@ cgiFormResultType cgiFormStringMultiple(
 	if (e != 0) {
 		do {
 			total++;
-		} while ((e = cgiFormEntryFindNext()) != 0); 
+		} while ((e = cgiFormEntryFindNext()) != 0);
 	}
 	stringArray = (char**)malloc(sizeof(char*) * (total + 1));
 	if (!stringArray) {
@@ -1410,7 +1410,7 @@ cgiFormResultType cgiFormStringMultiple(
 			strcpy(stringArray[i], e->value);
 			cgiFormEntryString(e, stringArray[i], max, 1);
 			i++;
-		} while ((e = cgiFormEntryFindNext()) != 0); 
+		} while ((e = cgiFormEntryFindNext()) != 0);
 		*result = stringArray;
 #ifdef CGICDEBUG
 		CGICDEBUGSTART
@@ -1435,7 +1435,7 @@ cgiFormResultType cgiFormStringSpaceNeeded(
 	e = cgiFormEntryFindFirst(name);
 	if (!e) {
 		*result = 1;
-		return cgiFormNotFound; 
+		return cgiFormNotFound;
 	}
 	*result = ((int)strlen(e->value)) + 1;
 	return cgiFormSuccess;
@@ -1448,9 +1448,9 @@ static cgiFormResultType cgiFormEntryString(
 	int len = 0;
 	int avail = max-1;
 	int crCount = 0;
-	int lfCount = 0;	
+	int lfCount = 0;
 	dp = result;
-	sp = e->value;	
+	sp = e->value;
 	while (1) {
 		int ch;
 		/* 1.07: don't check for available space now.
@@ -1489,14 +1489,14 @@ static cgiFormResultType cgiFormEntryString(
 					*dp = 10;
 					dp++;
 					lfsAdd--;
-					len++;		
+					len++;
 				}
 				crCount = 0;
 				lfCount = 0;
 			}
 			if (ch == '\0') {
 				/* The end of the source string */
-				break;				
+				break;
 			}
 			/* 1.06: check available space before adding
 				the character, because a previously added
@@ -1509,7 +1509,7 @@ static cgiFormResultType cgiFormEntryString(
 			dp++;
 			len++;
 		}
-		sp++;	
+		sp++;
 	}
 	*dp = '\0';
 	if (truncated) {
@@ -1530,7 +1530,7 @@ cgiFormResultType cgiFormInteger(
 	e = cgiFormEntryFindFirst(name);
 	if (!e) {
 		*result = defaultV;
-		return cgiFormNotFound; 
+		return cgiFormNotFound;
 	}
 	if (!strlen(e->value)) {
 		*result = defaultV;
@@ -1570,7 +1570,7 @@ cgiFormResultType cgiFormDouble(
 	e = cgiFormEntryFindFirst(name);
 	if (!e) {
 		*result = defaultV;
-		return cgiFormNotFound; 
+		return cgiFormNotFound;
 	}
 	if (!strlen(e->value)) {
 		*result = defaultV;
@@ -1766,7 +1766,7 @@ cgiFormResultType cgiCookieString(
 				}
 				return cgiFormNotFound;
 			}
-			p++;	
+			p++;
 			/* Allow whitespace after semicolon */
 			while ((*p) && isspace(*p)) {
 				p++;
@@ -2380,7 +2380,7 @@ cgiFormResultType cgiCookies(char ***result) {
 			i++;
 		}
 		while (*p && (*p != ';')) {
-			p++;	
+			p++;
 		}
 		if (!*p) {
 			break;
@@ -2407,7 +2407,7 @@ cgiFormResultType cgiFormEntries(char ***result) {
 			if (!strcmp(e->attr, pe->attr)) {
 				goto skipSecondValue;
 			}
-			pe = pe->next;					
+			pe = pe->next;
 		}
 		total++;
 skipSecondValue:
@@ -2434,7 +2434,7 @@ skipSecondValue:
 			if (!strcmp(e->attr, pe->attr)) {
 				goto skipSecondValue2;
 			}
-			pe = pe->next;					
+			pe = pe->next;
 		}
 		space = strlen(e->attr) + 1;
 		stringArray[i] = (char*)malloc(space);

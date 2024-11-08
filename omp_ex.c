@@ -1,3 +1,4 @@
+/* added by venovako */
 #include "cgic.h"
 #include <stdlib.h>
 #ifdef _OPENMP

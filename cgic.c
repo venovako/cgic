@@ -10,13 +10,13 @@
 #define cgicMaxTempSize 1073741824
 
 #if CGICDEBUG
-#define CGICDEBUGSTART                             \
-  {                                                \
-    FILE *dout = fopen(cgicTempDir "/debug", "a"); \
+#define CGICDEBUGSTART                                         \
+	{                                                      \
+		FILE *dout = fopen(cgicTempDir "/debug", "a"); \
 
-#define CGICDEBUGEND \
-    fclose(dout);    \
-  }
+#define CGICDEBUGEND          \
+		fclose(dout); \
+	}
 #else /* CGICDEBUG */
 #define CGICDEBUGSTART
 #define CGICDEBUGEND
@@ -121,7 +121,7 @@ static int cgiStrBeginsNc(char *s1, char *s2);
 
 #ifdef UNIT_TEST
 static int unitTest();
-
+/* UNIT_TEST requires main() */
 int main(int argc, char *argv[])
 {
   return cgicMain(argc, argv);
@@ -1899,7 +1899,7 @@ cgiEnvironmentResultType cgiWriteEnvironment(char *filename) {
 		/* Can't create file */
 		return cgiEnvironmentIO;
 	}
-	if (!cgiWriteString(out, "CGIC2.0")) {
+	if (!cgiWriteString(out, "CGIC" CGIC_VERSION)) {
 		goto error;
 	}
 	if (!cgiWriteString(out, cgiServerSoftware)) {

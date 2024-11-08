@@ -4,12 +4,14 @@ else # !NDEBUG
 CFLAGS=-Og -ggdb3 -DCGICDEBUG
 endif # ?NDEBUG
 CFLAGS += -march=native -fPIC -fexceptions -fasynchronous-unwind-tables -fno-omit-frame-pointer -pthread -Wall
+FFLAGS=$(CFLAGS)
 CC=gcc$(GNU)
+FC=gfortran$(GNU)
 AR=ar
 RANLIB=ranlib
 LIBS=-L. -lcgic
 
-all: libcgic.a cgictest.cgi capture
+all: libcgic.a cgictest.cgi cgiftest.cgi capture
 
 install: libcgic.a
 	cp libcgic.a /usr/local/lib
@@ -27,11 +29,17 @@ libcgic.a: cgic.o cgic.h
 cgictest.cgi: cgictest.o libcgic.a
 	$(CC) $(CFLAGS) cgictest.o -o cgictest.cgi ${LIBS}
 
+cgictest.obj: cgictest.c
+	$(CC) $(CFLAGS) -DCGICNOMAIN cgictest.c -c -o cgictest.obj
+
+cgiftest.cgi: cgictest.obj libcgic.a
+	$(FC) $(FFLAGS) cgiftest.f90 cgictest.obj -o cgiftest.cgi ${LIBS}
+
 capture: capture.o libcgic.a
 	$(CC) $(CFLAGS) capture.o -o capture ${LIBS}
 
 clean:
-	rm -f *.o *.a cgictest.cgi capture cgicunittest
+	rm -rfv *.o *.obj *.a *.dSYM cgictest.cgi capture cgicunittest
 
 test:
 	$(CC) $(CFLAGS) -DUNIT_TEST cgic.c -o cgicunittest

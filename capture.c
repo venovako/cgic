@@ -10,7 +10,9 @@ int cgiMain() {
 	return 0;
 }
 
+#ifndef CGICNOMAIN
 int main(int argc, char *argv[])
 {
   return cgicMain(argc, argv);
 }
+#endif /* !CGICNOMAIN */

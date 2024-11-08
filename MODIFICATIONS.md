@@ -19,4 +19,4 @@ This way `main()` is no longer a part of the library.
 
 One possible use case is to build an executable that can act as a CGI application as well as a standalone application, depending, e.g., on the command-line arguments.
 
-The other is a possibility to write the main program in something that is not C/C++ (e.g., in Fortran, with some effort).
+Another possibility is to write the main program in something that is not C/C++ (e.g., in Fortran, as shown in `cgiftest.f90`).

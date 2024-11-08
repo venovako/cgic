@@ -11,7 +11,7 @@ AR=ar
 RANLIB=ranlib
 LIBS=-L. -lcgic
 
-all: libcgic.a cgictest.cgi cgiftest.cgi omp_ex.cgi capture
+all: libcgic.a cgictest.cgi cgiftest.cgi who_ex.cgi omp_ex.cgi capture
 
 install: libcgic.a
 	cp libcgic.a /usr/local/lib
@@ -34,6 +34,9 @@ cgictest.obj: cgictest.c
 
 cgiftest.cgi: cgictest.obj libcgic.a
 	$(FC) $(FFLAGS) cgiftest.f90 cgictest.obj -o cgiftest.cgi ${LIBS}
+
+who_ex.cgi: who_ex.c libcgic.a
+	$(CC) $(CFLAGS) who_ex.c -o who_ex.cgi ${LIBS}
 
 omp_ex.cgi: omp_ex.c libcgic.a
 	$(CC) $(CFLAGS) -fopenmp omp_ex.c -o omp_ex.cgi ${LIBS}

@@ -16,6 +16,7 @@ int cgiMain()
   FILE *old = stderr;
   stderr = stdout;
   omp_display_env(1);
+  omp_display_affinity((const char*)NULL);
   stderr = old;
   (void)fprintf(cgiOut, "omp_get_max_threads() = %d\n", omp_get_max_threads());
 #else /* !_OPENMP */

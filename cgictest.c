@@ -15,9 +15,9 @@
 
 #ifdef WIN32
 #define SAVED_ENVIRONMENT "c:\\cgicsave.env"
-#else
+#else /* !WIN32 */
 #define SAVED_ENVIRONMENT "/tmp/cgicsave.env"
-#endif /* WIN32 */
+#endif /* ?WIN32 */
 
 #include <stdio.h>
 #include "cgic.h"

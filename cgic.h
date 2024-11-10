@@ -9,7 +9,7 @@
 /* Ensure proper linkage to c++ programs. */
 #ifdef __cplusplus
 extern "C" {
-#endif
+#endif /* __cplusplus */
 
 /* Bring in standard I/O since some of the functions refer to
 	types defined by it, such as FILE *. */

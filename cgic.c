@@ -1523,12 +1523,9 @@ static cgiFormResultType cgiFormEntryString(
 	}
 }
 
-static int cgiFirstNonspaceChar(char *s);
-
 cgiFormResultType cgiFormInteger(
-        char *name, long *result, long defaultV) {
+        char *name, int *result, int defaultV) {
 	cgiFormEntry *e;
-	int ch;
 	e = cgiFormEntryFindFirst(name);
 	if (!e) {
 		*result = defaultV;
@@ -1538,19 +1535,56 @@ cgiFormResultType cgiFormInteger(
 		*result = defaultV;
 		return cgiFormEmpty;
 	}
-	ch = cgiFirstNonspaceChar(e->value);
-	if (!(isdigit(ch)) && (ch != '-') && (ch != '+')) {
+	char *ep = (char*)NULL;
+	*result = (int)strtol(e->value, &ep, 0);
+	if (!ep || *ep) {
 		*result = defaultV;
 		return cgiFormBadType;
-	} else {
-		*result = atol(e->value);
-		return cgiFormSuccess;
 	}
+       	return cgiFormSuccess;
 }
 
 cgiFormResultType cgiFormIntegerBounded(
-        char *name, long *result, long min, long max, long defaultV) {
+        char *name, int *result, int min, int max, int defaultV) {
 	cgiFormResultType error = cgiFormInteger(name, result, defaultV);
+	if (error != cgiFormSuccess) {
+		return error;
+	}
+	if (*result < min) {
+		*result = min;
+		return cgiFormConstrained;
+	}
+	if (*result > max) {
+		*result = max;
+		return cgiFormConstrained;
+	}
+	return cgiFormSuccess;
+}
+
+cgiFormResultType cgiFormLong(
+        char *name, long *result, long defaultV) {
+	cgiFormEntry *e;
+	e = cgiFormEntryFindFirst(name);
+	if (!e) {
+		*result = defaultV;
+		return cgiFormNotFound;
+	}
+	if (!strlen(e->value)) {
+		*result = defaultV;
+		return cgiFormEmpty;
+	}
+       	char *ep = (char*)NULL;
+       	*result = strtol(e->value, &ep, 0);
+	if (!ep || *ep) {
+		*result = defaultV;
+	       	return cgiFormBadType;
+	}
+       	return cgiFormSuccess;
+}
+
+cgiFormResultType cgiFormLongBounded(
+        char *name, long *result, long min, long max, long defaultV) {
+	cgiFormResultType error = cgiFormLong(name, result, defaultV);
 	if (error != cgiFormSuccess) {
 		return error;
 	}
@@ -1568,7 +1602,6 @@ cgiFormResultType cgiFormIntegerBounded(
 cgiFormResultType cgiFormFloat(
         char *name, float *result, float defaultV) {
 	cgiFormEntry *e;
-	int ch;
 	e = cgiFormEntryFindFirst(name);
 	if (!e) {
 		*result = defaultV;
@@ -1578,14 +1611,13 @@ cgiFormResultType cgiFormFloat(
 		*result = defaultV;
 		return cgiFormEmpty;
 	}
-	ch = cgiFirstNonspaceChar(e->value);
-	if (!(isdigit(ch)) && (ch != '.') && (ch != '-') && (ch != '+')) {
+	char *ep = (char*)NULL;
+	*result = strtof(e->value, &ep);
+	if (!ep || *ep) {
 		*result = defaultV;
-		return cgiFormBadType;
-	} else {
-		*result = strtof(e->value, (char**)NULL);
-		return cgiFormSuccess;
+	       	return cgiFormBadType;
 	}
+	return cgiFormSuccess;
 }
 
 cgiFormResultType cgiFormFloatBounded(
@@ -1608,7 +1640,6 @@ cgiFormResultType cgiFormFloatBounded(
 cgiFormResultType cgiFormDouble(
         char *name, double *result, double defaultV) {
 	cgiFormEntry *e;
-	int ch;
 	e = cgiFormEntryFindFirst(name);
 	if (!e) {
 		*result = defaultV;
@@ -1618,14 +1649,13 @@ cgiFormResultType cgiFormDouble(
 		*result = defaultV;
 		return cgiFormEmpty;
 	}
-	ch = cgiFirstNonspaceChar(e->value);
-	if (!(isdigit(ch)) && (ch != '.') && (ch != '-') && (ch != '+')) {
+	char *ep = (char*)NULL;
+	*result = strtod(e->value, &ep);
+	if (!ep || *ep) {
 		*result = defaultV;
-		return cgiFormBadType;
-	} else {
-		*result = strtod(e->value, (char**)NULL);
-		return cgiFormSuccess;
+	       	return cgiFormBadType;
 	}
+	return cgiFormSuccess;
 }
 
 cgiFormResultType cgiFormDoubleBounded(
@@ -1649,7 +1679,6 @@ cgiFormResultType cgiFormDoubleBounded(
 cgiFormResultType cgiFormLongDouble(
         char *name, long double *result, long double defaultV) {
 	cgiFormEntry *e;
-	int ch;
 	e = cgiFormEntryFindFirst(name);
 	if (!e) {
 		*result = defaultV;
@@ -1659,14 +1688,13 @@ cgiFormResultType cgiFormLongDouble(
 		*result = defaultV;
 		return cgiFormEmpty;
 	}
-	ch = cgiFirstNonspaceChar(e->value);
-	if (!(isdigit(ch)) && (ch != '.') && (ch != '-') && (ch != '+')) {
+	char *ep = (char*)NULL;
+	*result = strtold(e->value, &ep);
+	if (!ep || *ep) {
 		*result = defaultV;
-		return cgiFormBadType;
-	} else {
-		*result = strtold(e->value, (char**)NULL);
-		return cgiFormSuccess;
+	       	return cgiFormBadType;
 	}
+	return cgiFormSuccess;
 }
 
 cgiFormResultType cgiFormLongDoubleBounded(
@@ -2402,10 +2430,12 @@ static cgiFormEntry *cgiFormEntryFindNext() {
 	return 0;
 }
 
+/* not required anymore
 static int cgiFirstNonspaceChar(char *s) {
 	int len = strspn(s, " \n\r\t");
 	return s[len];
 }
+*/
 
 void cgiStringArrayFree(char **stringArray) {
 	char *p;
@@ -2607,7 +2637,14 @@ cgiFormResultType cgiValueEscape(const char *s)
 
 #ifdef UNIT_TEST
 
-static void unitTestAssert(const int value, const char *message);
+static void unitTestAssert(const int value, const char *message)
+{
+	if (value) {
+		return;
+	}
+	fprintf(stderr, "Test failed: %s\n", message);
+	exit(1);
+}
 
 static int unitTest() {
 	char *input = "one=1&two=2&empty1&four=4&empty2";
@@ -2636,15 +2673,6 @@ static int unitTest() {
 	unitTestAssert(!strcmp(e->value, ""), "fifth entry value is not empty string");
 	unitTestAssert(!e->next, "unexpected entry at end of list");
 	return 0;
-}
-
-static void unitTestAssert(const int value, const char *message)
-{
-	if (value) {
-		return;
-	}
-	fprintf(stderr, "Test failed: %s\n", message);
-	exit(1);
 }
 
 #endif

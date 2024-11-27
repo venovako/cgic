@@ -110,9 +110,15 @@ extern cgiFormResultType cgiFormStringMultiple(
 extern void cgiStringArrayFree(char **stringArray);
 
 extern cgiFormResultType cgiFormInteger(
-	char *name, long *result, long defaultV);
+	char *name, int *result, int defaultV);
 
 extern cgiFormResultType cgiFormIntegerBounded(
+	char *name, int *result, int min, int max, int defaultV);
+
+extern cgiFormResultType cgiFormLong(
+	char *name, long *result, long defaultV);
+
+extern cgiFormResultType cgiFormLongBounded(
 	char *name, long *result, long min, long max, long defaultV);
 
 extern cgiFormResultType cgiFormFloat(

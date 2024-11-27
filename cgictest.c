@@ -128,9 +128,9 @@ void Temperature() {
 }
 	
 void Frogs() {
-	long frogsEaten;
-	cgiFormInteger("frogs", &frogsEaten, 0l);
-	fprintf(cgiOut, "I have eaten %ld frogs.<BR>\n", frogsEaten);
+	int frogsEaten;
+	cgiFormInteger("frogs", &frogsEaten, 0);
+	fprintf(cgiOut, "I have eaten %d frogs.<BR>\n", frogsEaten);
 }
 
 char *colors[] = {

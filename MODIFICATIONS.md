@@ -4,6 +4,10 @@ Some hardcoded paths changed and whitespace cleaned up.
 
 Wherever sensible, `malloc()` has been replaced by `calloc()`, and the subsequent `memset()` calls have been removed.
 
+`cgiFormInteger()` and its bounded version return a `long` instead of an `int` value.
+
+`cgiFormFloat()` and `cgiFormLongDouble()` and their bounded versions return a `float` or a `long double` value, respectively.
+
 A CGI application now has to explicitly contain
 ```c
 int main(int argc, char *argv[])

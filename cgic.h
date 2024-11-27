@@ -110,10 +110,10 @@ extern cgiFormResultType cgiFormStringMultiple(
 extern void cgiStringArrayFree(char **stringArray);
 
 extern cgiFormResultType cgiFormInteger(
-	char *name, int *result, int defaultV);
+	char *name, long *result, long defaultV);
 
 extern cgiFormResultType cgiFormIntegerBounded(
-	char *name, int *result, int min, int max, int defaultV);
+	char *name, long *result, long min, long max, long defaultV);
 
 extern cgiFormResultType cgiFormFloat(
 	char *name, float *result, float defaultV);
@@ -127,11 +127,13 @@ extern cgiFormResultType cgiFormDouble(
 extern cgiFormResultType cgiFormDoubleBounded(
 	char *name, double *result, double min, double max, double defaultV);
 
+#ifndef WIN32
 extern cgiFormResultType cgiFormLongDouble(
 	char *name, long double *result, long double defaultV);
 
 extern cgiFormResultType cgiFormLongDoubleBounded(
 	char *name, long double *result, long double min, long double max, long double defaultV);
+#endif /* !WIN32 */
 
 extern cgiFormResultType cgiFormSelectSingle(
 	char *name, char **choicesText, int choicesTotal, 

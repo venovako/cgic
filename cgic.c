@@ -1526,7 +1526,7 @@ static cgiFormResultType cgiFormEntryString(
 static int cgiFirstNonspaceChar(char *s);
 
 cgiFormResultType cgiFormInteger(
-        char *name, int *result, int defaultV) {
+        char *name, long *result, long defaultV) {
 	cgiFormEntry *e;
 	int ch;
 	e = cgiFormEntryFindFirst(name);
@@ -1543,13 +1543,13 @@ cgiFormResultType cgiFormInteger(
 		*result = defaultV;
 		return cgiFormBadType;
 	} else {
-		*result = atoi(e->value);
+		*result = atol(e->value);
 		return cgiFormSuccess;
 	}
 }
 
 cgiFormResultType cgiFormIntegerBounded(
-        char *name, int *result, int min, int max, int defaultV) {
+        char *name, long *result, long min, long max, long defaultV) {
 	cgiFormResultType error = cgiFormInteger(name, result, defaultV);
 	if (error != cgiFormSuccess) {
 		return error;
@@ -1645,6 +1645,7 @@ cgiFormResultType cgiFormDoubleBounded(
 	return cgiFormSuccess;
 }
 
+#ifndef WIN32
 cgiFormResultType cgiFormLongDouble(
         char *name, long double *result, long double defaultV) {
 	cgiFormEntry *e;
@@ -1684,6 +1685,7 @@ cgiFormResultType cgiFormLongDoubleBounded(
 	}
 	return cgiFormSuccess;
 }
+#endif /* !WIN32 */
 
 cgiFormResultType cgiFormSelectSingle(
 	char *name, char **choicesText, int choicesTotal, 

@@ -115,11 +115,23 @@ extern cgiFormResultType cgiFormInteger(
 extern cgiFormResultType cgiFormIntegerBounded(
 	char *name, int *result, int min, int max, int defaultV);
 
+extern cgiFormResultType cgiFormFloat(
+	char *name, float *result, float defaultV);
+
+extern cgiFormResultType cgiFormFloatBounded(
+	char *name, float *result, float min, float max, float defaultV);
+
 extern cgiFormResultType cgiFormDouble(
 	char *name, double *result, double defaultV);
 
 extern cgiFormResultType cgiFormDoubleBounded(
 	char *name, double *result, double min, double max, double defaultV);
+
+extern cgiFormResultType cgiFormLongDouble(
+	char *name, long double *result, long double defaultV);
+
+extern cgiFormResultType cgiFormLongDoubleBounded(
+	char *name, long double *result, long double min, long double max, long double defaultV);
 
 extern cgiFormResultType cgiFormSelectSingle(
 	char *name, char **choicesText, int choicesTotal, 
@@ -208,7 +220,6 @@ extern cgiEnvironmentResultType cgiWriteEnvironment(char *filename);
 extern cgiEnvironmentResultType cgiReadEnvironment(char *filename);
 
 extern int cgicMain(int argc, char *argv[]);
-extern int cgiMain();
 
 extern cgiFormResultType cgiFormEntries(
 	char ***ptrToStringArray);

@@ -11,6 +11,13 @@ PROGRAM CGIFTEST
        INTEGER(KIND=c_int) :: CGICMAIN
      END FUNCTION CGICMAIN
   END INTERFACE
+  INTERFACE
+     FUNCTION CGIMAIN() BIND(C,NAME='cgiMain')
+       USE, INTRINSIC :: ISO_C_BINDING
+       IMPLICIT NONE
+       INTEGER(KIND=c_int) :: CGIMAIN
+     END FUNCTION CGIMAIN
+  END INTERFACE
   ! TODO: this supposes that strlen(argv[0]) <= 255
   CHARACTER(LEN=256,KIND=c_char), TARGET :: ARGV0
   ! This is just a demo, so only send argv[0], since the
@@ -22,6 +29,7 @@ PROGRAM CGIFTEST
      ARGV0 = TRIM(ARGV0)//c_null_char
      ARGV(1) = C_LOC(ARGV0)
      RET = INT(CGICMAIN(1_c_int, ARGV))
+     IF (RET .EQ. 0) RET = INT(CGIMAIN())
   ELSE ! TODO: add some error handling
      ARGV(1) = c_null_ptr
   END IF

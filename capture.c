@@ -1,4 +1,5 @@
 #include "cgic.h"
+#include <stdlib.h>
 
 int cgiMain() {
 	cgiWriteEnvironment("/tmp/capcgi.dat");
@@ -13,6 +14,6 @@ int cgiMain() {
 #ifndef CGICNOMAIN
 int main(int argc, char *argv[])
 {
-  return cgicMain(argc, argv);
+  return (cgicMain(argc, argv) ? EXIT_FAILURE : cgiMain());
 }
 #endif /* !CGICNOMAIN */

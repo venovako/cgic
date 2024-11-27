@@ -481,6 +481,6 @@ void SaveEnvironment()
 #ifndef CGICNOMAIN
 int main(int argc, char *argv[])
 {
-  return cgicMain(argc, argv);
+  return (cgicMain(argc, argv) ? EXIT_FAILURE : cgiMain());
 }
 #endif /* !CGICNOMAIN */

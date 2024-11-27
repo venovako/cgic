@@ -129,7 +129,11 @@ static int unitTest();
 /* UNIT_TEST requires main() */
 int main(int argc, char *argv[])
 {
-  return cgicMain(argc, argv);
+  if (cgicMain(argc, argv))
+    return EXIT_FAILURE;
+  const int ret = unitTest();
+  cgiFreeResources();
+  return ret;
 }
 #endif /* UNIT_TEST */
 
@@ -291,14 +295,7 @@ int cgicMain(int argc, char *argv[])
 #endif /* CGICDEBUG */
 		}
 	}
-#ifdef UNIT_TEST
-	unitTest();
-	cgiFreeResources();
         result = ((argc <= 0) || !argv);
-#else
-        if (!(result = ((argc <= 0) || !argv)))
-          result = cgiMain();
-#endif
         return result;
 }
 
@@ -1568,6 +1565,46 @@ cgiFormResultType cgiFormIntegerBounded(
 	return cgiFormSuccess;
 }
 
+cgiFormResultType cgiFormFloat(
+        char *name, float *result, float defaultV) {
+	cgiFormEntry *e;
+	int ch;
+	e = cgiFormEntryFindFirst(name);
+	if (!e) {
+		*result = defaultV;
+		return cgiFormNotFound;
+	}
+	if (!strlen(e->value)) {
+		*result = defaultV;
+		return cgiFormEmpty;
+	}
+	ch = cgiFirstNonspaceChar(e->value);
+	if (!(isdigit(ch)) && (ch != '.') && (ch != '-') && (ch != '+')) {
+		*result = defaultV;
+		return cgiFormBadType;
+	} else {
+		*result = strtof(e->value, (char**)NULL);
+		return cgiFormSuccess;
+	}
+}
+
+cgiFormResultType cgiFormFloatBounded(
+        char *name, float *result, float min, float max, float defaultV) {
+	cgiFormResultType error = cgiFormFloat(name, result, defaultV);
+	if (error != cgiFormSuccess) {
+		return error;
+	}
+	if (*result < min) {
+		*result = min;
+		return cgiFormConstrained;
+	}
+	if (*result > max) {
+		*result = max;
+		return cgiFormConstrained;
+	}
+	return cgiFormSuccess;
+}
+
 cgiFormResultType cgiFormDouble(
         char *name, double *result, double defaultV) {
 	cgiFormEntry *e;
@@ -1586,7 +1623,7 @@ cgiFormResultType cgiFormDouble(
 		*result = defaultV;
 		return cgiFormBadType;
 	} else {
-		*result = atof(e->value);
+		*result = strtod(e->value, (char**)NULL);
 		return cgiFormSuccess;
 	}
 }
@@ -1594,6 +1631,46 @@ cgiFormResultType cgiFormDouble(
 cgiFormResultType cgiFormDoubleBounded(
         char *name, double *result, double min, double max, double defaultV) {
 	cgiFormResultType error = cgiFormDouble(name, result, defaultV);
+	if (error != cgiFormSuccess) {
+		return error;
+	}
+	if (*result < min) {
+		*result = min;
+		return cgiFormConstrained;
+	}
+	if (*result > max) {
+		*result = max;
+		return cgiFormConstrained;
+	}
+	return cgiFormSuccess;
+}
+
+cgiFormResultType cgiFormLongDouble(
+        char *name, long double *result, long double defaultV) {
+	cgiFormEntry *e;
+	int ch;
+	e = cgiFormEntryFindFirst(name);
+	if (!e) {
+		*result = defaultV;
+		return cgiFormNotFound;
+	}
+	if (!strlen(e->value)) {
+		*result = defaultV;
+		return cgiFormEmpty;
+	}
+	ch = cgiFirstNonspaceChar(e->value);
+	if (!(isdigit(ch)) && (ch != '.') && (ch != '-') && (ch != '+')) {
+		*result = defaultV;
+		return cgiFormBadType;
+	} else {
+		*result = strtold(e->value, (char**)NULL);
+		return cgiFormSuccess;
+	}
+}
+
+cgiFormResultType cgiFormLongDoubleBounded(
+        char *name, long double *result, long double min, long double max, long double defaultV) {
+	cgiFormResultType error = cgiFormLongDouble(name, result, defaultV);
 	if (error != cgiFormSuccess) {
 		return error;
 	}

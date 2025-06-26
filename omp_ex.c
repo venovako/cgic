@@ -13,7 +13,7 @@ int cgiMain()
   (void)fprintf(cgiOut, "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"UTF-8\">\n<title>OpenMP environment</title>\n</head>\n<body>\n<pre>");
 #ifdef _OPENMP
   /* this assumes that omp_display_env() writes to stderr */
-  FILE *old = stderr;
+  FILE *const old = stderr;
   stderr = stdout;
   omp_display_env(1);
   omp_display_affinity((const char*)NULL);

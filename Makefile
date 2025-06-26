@@ -9,14 +9,19 @@ CC=gcc$(GNU)
 FC=gfortran$(GNU)
 AR=ar
 RANLIB=ranlib
-LIBS=-L. -lcgic
+#static link on Linux: set STATIC to -static -s
+ifndef STATIC
+STATIC=-rdynamic
+endif # !STATIC
+LIBS=$(STATIC) -L. -lcgic
 
 all: libcgic.a cgictest.cgi cgiftest.cgi who_ex.cgi omp_ex.cgi capture
 
 install: libcgic.a
 	cp libcgic.a /usr/local/lib
 	cp cgic.h /usr/local/include
-	@echo libcgic.a is in /usr/local/lib. cgic.h is in /usr/local/include.
+	@echo libcgic.a is in /usr/local/lib
+	@echo cgic.h is in /usr/local/include
 
 libcgic.a: cgic.o cgic.h
 	rm -f libcgic.a
@@ -24,7 +29,6 @@ libcgic.a: cgic.o cgic.h
 	$(RANLIB) libcgic.a
 
 #mingw32 and cygwin users: replace .cgi with .exe
-#static link on Linux: add -static -s
 
 cgictest.cgi: cgictest.o libcgic.a
 	$(CC) $(CFLAGS) cgictest.o -o cgictest.cgi ${LIBS}

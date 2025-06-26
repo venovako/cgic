@@ -8,16 +8,16 @@
 
 int cgiMain()
 {
-  struct passwd *rpw = getpwuid(getuid());
+  struct passwd *const rpw = getpwuid(getuid());
   if (!rpw)
     return EXIT_FAILURE;
-  struct group *rgr = getgrgid(getgid());
+  struct group *const rgr = getgrgid(getgid());
   if (!rgr)
     return EXIT_FAILURE;
-  struct passwd *epw = getpwuid(geteuid());
+  struct passwd *const epw = getpwuid(geteuid());
   if (!epw)
     return EXIT_FAILURE;
-  struct group *egr = getgrgid(getegid());
+  struct group *const egr = getgrgid(getegid());
   if (!egr)
     return EXIT_FAILURE;
   cgiHeaderContentType("text/html");

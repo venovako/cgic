@@ -15,7 +15,7 @@ STATIC=-rdynamic
 endif # !STATIC
 LIBS=$(STATIC) -L. -lcgic
 
-all: libcgic.a cgictest.cgi cgiftest.cgi who_ex.cgi omp_ex.cgi capture
+all: libcgic.a cgictest.cgi cgiftest.cgi who_ex.cgi capture #omp_ex.cgi
 
 install: libcgic.a
 	cp libcgic.a /usr/local/lib

@@ -3,7 +3,10 @@ CFLAGS=-O$(NDEBUG) -DNDEBUG
 else # !NDEBUG
 CFLAGS=-Og -ggdb3 -DCGICDEBUG
 endif # ?NDEBUG
-CFLAGS += -march=native -fPIC -fexceptions -fasynchronous-unwind-tables -fno-omit-frame-pointer -pthread -Wall
+ifndef MARCH
+MARCH=native
+endif # !MARCH
+CFLAGS += -march=$(MARCH) -fPIC -fexceptions -fasynchronous-unwind-tables -fno-omit-frame-pointer -pthread -Wall
 FFLAGS=$(CFLAGS)
 CC=gcc$(GNU)
 FC=gfortran$(GNU)

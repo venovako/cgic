@@ -8,6 +8,8 @@ Wherever sensible, `malloc()` has been replaced by `calloc()`, and the subsequen
 
 `cgiFormFloat()` and `cgiFormLongDouble()` and their bounded versions return a `float` or a `long double` value, respectively.
 
+Some static functions have been made `extern` and the associated type definitions have been moved to `cgic.h`.
+
 A CGI application now has to explicitly contain
 ```c
 int main(int argc, char *argv[])

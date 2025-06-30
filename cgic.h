@@ -178,6 +178,32 @@ extern cgiFormResultType cgiFormFileContentType(
 extern cgiFormResultType cgiFormFileSize(
 	char *name, int *sizeP);
 
+typedef struct cgiFormEntryStruct {
+	char *attr;
+	/* value is populated for regular form fields only.
+		For file uploads, it points to an empty string, and file
+		upload data should be read from the file tfileName. */ 
+	char *value;
+	/* When fileName is not an empty string, tfileName is not null,
+		and 'value' points to an empty string. */
+	/* Valid for both files and regular fields; does not include
+		terminating null of regular fields. */
+	int valueLength;
+	char *fileName;
+	char *contentType;
+	/* Temporary file descriptor for working storage of file uploads. */
+	FILE *tFile;
+        struct cgiFormEntryStruct *next;
+} cgiFormEntry;
+
+extern cgiFormResultType cgiFormEntryString(
+	cgiFormEntry *e, char *result, int max, int newlines);
+
+extern cgiFormEntry *cgiFormEntryFindFirst(
+        char *name);
+
+extern cgiFormEntry *cgiFormEntryFindNext();
+
 typedef struct cgiFileStruct *cgiFilePtr;
 
 extern cgiFormResultType cgiFormFileOpen(

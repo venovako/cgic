@@ -94,6 +94,24 @@ typedef enum {
 	which will be null when 'in' is null. DO NOT MODIFY THESE 
 	VALUES. Make local copies if modifications are desired. */
 
+typedef struct cgiFormEntryStruct {
+	char *attr;
+	/* value is populated for regular form fields only.
+		For file uploads, it points to an empty string, and file
+		upload data should be read from the file tfileName. */ 
+	char *value;
+	/* When fileName is not an empty string, tfileName is not null,
+		and 'value' points to an empty string. */
+	/* Valid for both files and regular fields; does not include
+		terminating null of regular fields. */
+	int valueLength;
+	char *fileName;
+	char *contentType;
+	/* Temporary file descriptor for working storage of file uploads. */
+	FILE *tFile;
+	struct cgiFormEntryStruct *next;
+} cgiFormEntry;
+
 /* The first form entry. */
 static cgiFormEntry *cgiFormEntryFirst;
 
@@ -1181,6 +1199,12 @@ static void cgiFreeResources() {
 	cgiRestored = 0;
 }
 
+static cgiFormResultType cgiFormEntryString(
+	cgiFormEntry *e, char *result, int max, int newlines);
+
+static cgiFormEntry *cgiFormEntryFindFirst(char *name);
+static cgiFormEntry *cgiFormEntryFindNext();
+
 cgiFormResultType cgiFormString(
         char *name, char *result, int max) {
 	cgiFormEntry *e;
@@ -1276,6 +1300,23 @@ cgiFormResultType cgiFormFileSize(
 typedef struct cgiFileStruct {
 	FILE *in;
 } cgiFile;
+
+cgiFormResultType cgiFormFileOpenDesc(
+	char *name, int *cfd)
+{
+	cgiFormEntry *e;
+	if (!cfd)
+		return cgiFormMemory;
+	e = cgiFormEntryFindFirst(name);
+	if (!e)
+		return cgiFormNotFound;
+	if (!e->tFile)
+		return cgiFormNotAFile;
+	*cfd = dup(fileno(e->tFile));
+	if (*cfd < 0)
+		return cgiFormIO;
+	return cgiFormSuccess;
+}
 
 cgiFormResultType cgiFormFileOpen(
 	char *name, cgiFilePtr *cfpp)
@@ -1419,7 +1460,7 @@ cgiFormResultType cgiFormStringSpaceNeeded(
 	return cgiFormSuccess;
 }
 
-cgiFormResultType cgiFormEntryString(
+static cgiFormResultType cgiFormEntryString(
 	cgiFormEntry *e, char *result, int max, int newlines) {
 	char *dp, *sp;
 	int truncated = 0;
@@ -2389,13 +2430,13 @@ static int cgiStrBeginsNc(char *s1, char *s2) {
 static char *cgiFindTarget = 0;
 static cgiFormEntry *cgiFindPos = 0;
 
-cgiFormEntry *cgiFormEntryFindFirst(char *name) {
+static cgiFormEntry *cgiFormEntryFindFirst(char *name) {
 	cgiFindTarget = name;
 	cgiFindPos = cgiFormEntryFirst;
 	return cgiFormEntryFindNext();
 }
 
-cgiFormEntry *cgiFormEntryFindNext() {
+static cgiFormEntry *cgiFormEntryFindNext() {
 	while (cgiFindPos) {
 		cgiFormEntry *c = cgiFindPos;
 		cgiFindPos = c->next;

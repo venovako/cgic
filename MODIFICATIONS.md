@@ -8,6 +8,8 @@ Wherever sensible, `malloc()` has been replaced by `calloc()`, and the subsequen
 
 `cgiFormFloat()` and `cgiFormLongDouble()` and their bounded versions return a `float` or a `long double` value, respectively.
 
+`cgiFormFileOpenDesc()` returns a `dup(2)`-ed descriptor of the uploaded file without further actions.
+
 A CGI application now has to explicitly contain
 ```c
 int main(int argc, char *argv[])

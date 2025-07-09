@@ -15,12 +15,12 @@
 #endif /* !cgicMaxTempSize */
 
 #if CGICDEBUG
-#define CGICDEBUGSTART                                         \
-	{                                                      \
-		FILE *dout = fopen(cgicTempDir "/debug", "a"); \
+#define CGICDEBUGSTART                                               \
+	{                                                            \
+		FILE *const dout = fopen(cgicTempDir "/debug", "a"); \
 
-#define CGICDEBUGEND          \
-		fclose(dout); \
+#define CGICDEBUGEND                \
+		(void)fclose(dout); \
 	}
 #else /* CGICDEBUG */
 #define CGICDEBUGSTART
@@ -163,11 +163,11 @@ int cgicMain(int argc, char *argv[])
 	e = getenv("CONTENT_TYPE");
 	if (e) {
 		if (strlen(e) < sizeof(cgiContentTypeData)) {
-			strcpy(cgiContentType, e);
+			(void)strcpy(cgiContentType, e);
 		} else {
 			/* Truncate safely in the event of what is almost certainly
 				a hack attempt */
-			strncpy(cgiContentType, e, sizeof(cgiContentTypeData));
+			(void)strncpy(cgiContentType, e, sizeof(cgiContentTypeData));
 			cgiContentType[sizeof(cgiContentTypeData) - 1] = '\0';
 		}
 	} else {
@@ -209,9 +209,9 @@ int cgicMain(int argc, char *argv[])
 	cgiGetenv(&cgiCookie, "HTTP_COOKIE");
 #ifdef CGICDEBUG
 	CGICDEBUGSTART
-	fprintf(dout, "%d\n", cgiContentLength);
-	fprintf(dout, "%s\n", cgiRequestMethod);
-	fprintf(dout, "%s\n", cgiContentType);
+        (void)fprintf(dout, "%d\n", cgiContentLength);
+	(void)fprintf(dout, "%s\n", cgiRequestMethod);
+	(void)fprintf(dout, "%s\n", cgiContentType);
 	CGICDEBUGEND	
 #endif /* CGICDEBUG */
 #ifdef WIN32
@@ -228,19 +228,19 @@ int cgicMain(int argc, char *argv[])
 	if (cgiStrEqNc(cgiRequestMethod, "post")) {
 #ifdef CGICDEBUG
 		CGICDEBUGSTART
-		fprintf(dout, "POST recognized\n");
+                (void)fprintf(dout, "POST recognized\n");
 		CGICDEBUGEND
 #endif /* CGICDEBUG */
 		if (cgiStrEqNc(cgiContentType, "application/x-www-form-urlencoded")) {	
 #ifdef CGICDEBUG
 			CGICDEBUGSTART
-			fprintf(dout, "Calling PostFormInput\n");
+                        (void)fprintf(dout, "Calling PostFormInput\n");
 			CGICDEBUGEND	
 #endif /* CGICDEBUG */
 			if (cgiParsePostFormInput() != cgiParseSuccess) {
 #ifdef CGICDEBUG
 				CGICDEBUGSTART
-				fprintf(dout, "PostFormInput failed\n");
+                                (void)fprintf(dout, "PostFormInput failed\n");
 				CGICDEBUGEND	
 #endif /* CGICDEBUG */
 				cgiHeaderStatus(500, "Error reading form data");
@@ -249,19 +249,19 @@ int cgicMain(int argc, char *argv[])
 			}
 #ifdef CGICDEBUG
 			CGICDEBUGSTART
-			fprintf(dout, "PostFormInput succeeded\n");
+                        (void)fprintf(dout, "PostFormInput succeeded\n");
 			CGICDEBUGEND	
 #endif /* CGICDEBUG */
 		} else if (cgiStrEqNc(cgiContentType, "multipart/form-data")) {
 #ifdef CGICDEBUG
 			CGICDEBUGSTART
-			fprintf(dout, "Calling PostMultipartInput\n");
+                        (void)fprintf(dout, "Calling PostMultipartInput\n");
 			CGICDEBUGEND	
 #endif /* CGICDEBUG */
 			if (cgiParsePostMultipartInput() != cgiParseSuccess) {
 #ifdef CGICDEBUG
 				CGICDEBUGSTART
-				fprintf(dout, "PostMultipartInput failed\n");
+                                (void)fprintf(dout, "PostMultipartInput failed\n");
 				CGICDEBUGEND	
 #endif /* CGICDEBUG */
 				cgiHeaderStatus(500, "Error reading form data");
@@ -270,7 +270,7 @@ int cgicMain(int argc, char *argv[])
 			}
 #ifdef CGICDEBUG
 			CGICDEBUGSTART
-			fprintf(dout, "PostMultipartInput succeeded\n");
+                        (void)fprintf(dout, "PostMultipartInput succeeded\n");
 			CGICDEBUGEND	
 #endif /* CGICDEBUG */
 		}
@@ -281,7 +281,7 @@ int cgicMain(int argc, char *argv[])
 		if (cgiParseGetFormInput() != cgiParseSuccess) {
 #ifdef CGICDEBUG
 			CGICDEBUGSTART
-			fprintf(dout, "GetFormInput failed\n");
+                        (void)fprintf(dout, "GetFormInput failed\n");
 			CGICDEBUGEND	
 #endif /* CGICDEBUG */
 			cgiHeaderStatus(500, "Error reading form data");
@@ -290,7 +290,7 @@ int cgicMain(int argc, char *argv[])
 		} else {
 #ifdef CGICDEBUG
 			CGICDEBUGSTART
-			fprintf(dout, "GetFormInput succeeded\n");
+                        (void)fprintf(dout, "GetFormInput succeeded\n");
 			CGICDEBUGEND	
 #endif /* CGICDEBUG */
 		}
@@ -444,7 +444,7 @@ static cgiParseResultType cgiParsePostMultipartInput() {
 	char *out = 0;
 	mpStream mp;
 	mpStreamPtr mpp = &mp;
-	memset(&mp, 0, sizeof(mp));
+	(void)memset(&mp, 0, sizeof(mp));
 	if (!cgiContentLength) {
 		return cgiParseSuccess;
 	}
@@ -536,7 +536,7 @@ static cgiParseResultType cgiParsePostMultipartInput() {
 		if (result != cgiParseSuccess) {
 			/* Lack of a boundary here is an error. */
 			if (outf) {
-				fclose(outf);
+				(void)fclose(outf);
 			}
 			if (out) {
 				free(out);
@@ -554,7 +554,7 @@ static cgiParseResultType cgiParsePostMultipartInput() {
 		if (!n->attr) {
 			goto outOfMemory;
 		}
-		strcpy(n->attr, fname);
+		(void)strcpy(n->attr, fname);
 		if (out) {
 			n->value = out;
 			out = 0;
@@ -575,17 +575,17 @@ static cgiParseResultType cgiParsePostMultipartInput() {
 		if (!n->fileName) {
 			goto outOfMemory;
 		}
-		strcpy(n->fileName, ffileName);
+		(void)strcpy(n->fileName, ffileName);
 		n->contentType = (char*)malloc(strlen(fcontentType) + 1);
 		if (!n->contentType) {
 			goto outOfMemory;
 		}
-		strcpy(n->contentType, fcontentType);
+		(void)strcpy(n->contentType, fcontentType);
 
 		if(outf)
 		{
 			n->tFile = fdopen(dup(fileno(outf)), "w+b");
-			fclose(outf);
+			(void)fclose(outf);
 		}
 
 		l = n;
@@ -603,7 +603,7 @@ outOfMemory:
 			free(n->fileName);
 		}
 		if (n->tFile) {
-			fclose(n->tFile);
+			(void)fclose(n->tFile);
 		}
 		if (n->contentType) {
 			free(n->contentType);
@@ -614,7 +614,7 @@ outOfMemory:
 		free(out);
 	}
 	if (outf) {
-		fclose(outf);
+		(void)fclose(outf);
 	}
 
 return cgiParseMemory;
@@ -639,15 +639,15 @@ static cgiParseResultType getTempFile(FILE **tFile)
 		chmod call (glibc 2.0.6 and lower might
 		otherwise have allowed this). */
 	int outfd;
-	strcpy(tfileName, cgicTempDir "/cgicXXXXXX");
+	(void)strcpy(tfileName, cgicTempDir "/cgicXXXXXX");
 	outfd = mkstemp(tfileName);
 	if (outfd == -1) {
 		return cgiParseIO;
 	}
-	close(outfd);
+	(void)close(outfd);
 	/* Fix the permissions */
 	if (chmod(tfileName, 0600) != 0) {
-		unlink(tfileName);
+		(void)unlink(tfileName);
 		return cgiParseIO;
 	}
 #else
@@ -657,7 +657,7 @@ static cgiParseResultType getTempFile(FILE **tFile)
 	}
 #endif
 	*tFile = fopen(tfileName, "w+b");
-	unlink(tfileName);
+	(void)unlink(tfileName);
 	return cgiParseSuccess;
 }
 
@@ -686,7 +686,7 @@ static cgiParseResultType getTempFile(FILE **tFile)
 #define BAPPEND(ch) \
 	{ \
 		if (outf) { \
-			putc(ch, outf); \
+			(void)putc(ch, outf); \
 			outLen++; \
 		} else if (out) { \
 			RAPPEND(out, ch); \
@@ -717,7 +717,7 @@ cgiParseResultType afterNextBoundary(mpStreamPtr mpp, FILE *outf, char **outP,
 		}
 	}
 	boffset = 0;
-	sprintf(workingBoundaryData, "\r\n--%s", cgiMultipartBoundary);
+	(void)sprintf(workingBoundaryData, "\r\n--%s", cgiMultipartBoundary);
 	if (first) {
 		workingBoundary = workingBoundaryData + 2;
 	}
@@ -1165,7 +1165,7 @@ static void cgiFreeResources() {
 		free(c->fileName);
 		free(c->contentType);
 		if (c->tFile) {
-			fclose(c->tFile);
+			(void)fclose(c->tFile);
 		}
 		free(c);
 		c = n;
@@ -1210,7 +1210,7 @@ cgiFormResultType cgiFormString(
 	cgiFormEntry *e;
 	e = cgiFormEntryFindFirst(name);
 	if (!e) {
-		strcpy(result, "");
+		(void)strcpy(result, "");
 		return cgiFormNotFound;
 	}
 	return cgiFormEntryString(e, result, max, 1);
@@ -1224,7 +1224,7 @@ cgiFormResultType cgiFormFileName(
 	char *s;
 	e = cgiFormEntryFindFirst(name);
 	if (!e) {
-		strcpy(result, "");
+		(void)strcpy(result, "");
 		return cgiFormNotFound;
 	}
 	s = e->fileName;
@@ -1368,7 +1368,7 @@ cgiFormResultType cgiFormFileClose(cgiFilePtr cfp)
 	if (!cfp) {
 		return cgiFormOpenFailed;
 	}
-	fclose(cfp->in);
+	(void)fclose(cfp->in);
 	free(cfp);
 	return cgiFormSuccess;
 }
@@ -1378,7 +1378,7 @@ cgiFormResultType cgiFormStringNoNewlines(
 	cgiFormEntry *e;
 	e = cgiFormEntryFindFirst(name);
 	if (!e) {
-		strcpy(result, "");
+		(void)strcpy(result, "");
 		return cgiFormNotFound;
 	}
 	return cgiFormEntryString(e, result, max, 0);
@@ -1412,7 +1412,7 @@ cgiFormResultType cgiFormStringMultiple(
 	e = cgiFormEntryFindFirst(name);
 #ifdef CGICDEBUG
 	CGICDEBUGSTART
-	fprintf(dout, "StringMultiple Beginning\n");
+        (void)fprintf(dout, "StringMultiple Beginning\n");
 	CGICDEBUGEND
 #endif /* CGICDEBUG */
 	if (e) {
@@ -1426,14 +1426,14 @@ cgiFormResultType cgiFormStringMultiple(
 				*result = 0;
 				return cgiFormMemory;
 			}
-			strcpy(stringArray[i], e->value);
+			(void)strcpy(stringArray[i], e->value);
 			cgiFormEntryString(e, stringArray[i], max, 1);
 			i++;
 		} while ((e = cgiFormEntryFindNext()) != 0);
 		*result = stringArray;
 #ifdef CGICDEBUG
 		CGICDEBUGSTART
-		fprintf(dout, "StringMultiple Succeeding\n");
+                (void)fprintf(dout, "StringMultiple Succeeding\n");
 		CGICDEBUGEND
 #endif /* CGICDEBUG */
 		return cgiFormSuccess;
@@ -1441,7 +1441,7 @@ cgiFormResultType cgiFormStringMultiple(
 		*result = stringArray;
 #ifdef CGICDEBUG
 		CGICDEBUGSTART
-		fprintf(dout, "StringMultiple found nothing\n");
+                (void)fprintf(dout, "StringMultiple found nothing\n");
 		CGICDEBUGEND
 #endif /* CGICDEBUG */
 		return cgiFormNotFound;
@@ -1741,7 +1741,7 @@ cgiFormResultType cgiFormSelectSingle(
 	e = cgiFormEntryFindFirst(name);
 #ifdef CGICDEBUG
 	CGICDEBUGSTART
-	fprintf(dout, "%p\n", e);
+        (void)fprintf(dout, "%p\n", e);
 	CGICDEBUGEND
 #endif /* CGICDEBUG */
 	if (!e) {
@@ -1751,13 +1751,13 @@ cgiFormResultType cgiFormSelectSingle(
 	for (i=0; (i < choicesTotal); i++) {
 #ifdef CGICDEBUG
 		CGICDEBUGSTART
-		fprintf(dout, "%s %s\n", choicesText[i], e->value);
+                (void)fprintf(dout, "%s %s\n", choicesText[i], e->value);
 		CGICDEBUGEND
 #endif /* CGICDEBUG */
 		if (cgiStrEq(choicesText[i], e->value)) {
 #ifdef CGICDEBUG
 			CGICDEBUGSTART
-			fprintf(dout, "MATCH\n");
+                        (void)fprintf(dout, "MATCH\n");
 			CGICDEBUGEND
 #endif /* CGICDEBUG */
 			*result = i;
@@ -1931,7 +1931,7 @@ void cgiHeaderCookieSetInteger(char *name, int value, int secondsToLive,
 	char *path, char *domain)
 {
 	char svalue[256];
-	sprintf(svalue, "%d", value);
+	(void)sprintf(svalue, "%d", value);
 	cgiHeaderCookieSet(name, svalue, secondsToLive, path, domain, 0);
 }
 
@@ -1976,10 +1976,10 @@ void cgiHeaderCookieSet(char *name, char *value, int secondsToLive,
 	time_t now;
 	time_t then;
 	struct tm *gt;
-	time(&now);
+	(void)time(&now);
 	then = now + secondsToLive;
 	gt = gmtime(&then);
-	fprintf(cgiOut, 
+	(void)fprintf(cgiOut, 
 		"Set-Cookie: %s=%s; domain=%s; expires=%s, %02d-%s-%04d %02d:%02d:%02d GMT; path=%s%s%s%s\r\n",
 		name, value, domain, 
 		days[gt->tm_wday],
@@ -2002,15 +2002,15 @@ void cgiHeaderCookieSetString(char *name, char *value, int secondsToLive,
 }
 
 void cgiHeaderLocation(char *redirectUrl) {
-	fprintf(cgiOut, "Location: %s\r\n\r\n", redirectUrl);
+	(void)fprintf(cgiOut, "Location: %s\r\n\r\n", redirectUrl);
 }
 
 void cgiHeaderStatus(int status, char *statusMessage) {
-	fprintf(cgiOut, "Status: %d %s\r\n\r\n", status, statusMessage);
+	(void)fprintf(cgiOut, "Status: %d %s\r\n\r\n", status, statusMessage);
 }
 
 void cgiHeaderContentType(char *mimeType) {
-	fprintf(cgiOut, "Content-type: %s\r\n\r\n", mimeType);
+	(void)fprintf(cgiOut, "Content-type: %s\r\n\r\n", mimeType);
 }
 
 static int cgiWriteString(FILE *out, char *s);
@@ -2138,14 +2138,14 @@ cgiEnvironmentResultType cgiWriteEnvironment(char *filename) {
 		}
 		e = e->next;
 	}
-	fclose(out);
+	(void)fclose(out);
 	return cgiEnvironmentSuccess;
 error:
-	fclose(out);
+	(void)fclose(out);
 	/* If this function is not defined in your system,
 		you must substitute the appropriate 
 		file-deletion function. */
-	unlink(filename);
+	(void)unlink(filename);
 	return cgiEnvironmentIO;
 }
 
@@ -2263,7 +2263,7 @@ cgiEnvironmentResultType cgiReadEnvironment(char *filename) {
 		e = (cgiFormEntry*)calloc(1, sizeof(cgiFormEntry));
 		if (!e) {
 			cgiFreeResources();
-			fclose(in);
+			(void)fclose(in);
 			return cgiEnvironmentMemory;
 		}
 		if (!cgiReadString(in, &e->attr)) {
@@ -2309,12 +2309,12 @@ cgiEnvironmentResultType cgiReadEnvironment(char *filename) {
 				got = fread(buffer, 1, tryr, in);
 				if (got <= 0) {
 					result = cgiEnvironmentIO;
-					fclose(out);
+					(void)fclose(out);
 					goto error;
 				}
 				if (((int)fwrite(buffer, 1, got, out)) != got) {
 					result = cgiEnvironmentIO;
-					fclose(out);
+					(void)fclose(out);
 					goto error;
 				}
 				len -= got;
@@ -2332,14 +2332,14 @@ cgiEnvironmentResultType cgiReadEnvironment(char *filename) {
 		}
 		p = e;
 	}
-	fclose(in);
+	(void)fclose(in);
 	cgiRestored = 1;
 	return cgiEnvironmentSuccess;
 outOfMemory:
 	result = cgiEnvironmentMemory;
 error:
 	cgiFreeResources();
-	fclose(in);
+	(void)fclose(in);
 	if (e) {
 		if (e->attr) {
 			free(e->attr);
@@ -2354,7 +2354,7 @@ error:
 			free(e->contentType);
 		}
 		if (e->tFile) {
-			fclose(e->tFile);
+			(void)fclose(e->tFile);
 		}
 		free(e);
 	}
@@ -2506,7 +2506,7 @@ cgiFormResultType cgiCookies(char ***result) {
 				*result = 0;
 				return cgiFormMemory;
 			}
-			memcpy(stringArray[i], n, p - n);
+			(void)memcpy(stringArray[i], n, p - n);
 			stringArray[i][p - n] = '\0';
 			i++;
 		}
@@ -2575,7 +2575,7 @@ skipSecondValue:
 			*result = 0;
 			return cgiFormMemory;
 		}
-		strcpy(stringArray[i], e->attr);
+		(void)strcpy(stringArray[i], e->attr);
 		i++;
 skipSecondValue2:
 		e = e->next;
@@ -2659,7 +2659,7 @@ static void unitTestAssert(const int value, const char *message)
 	if (value) {
 		return;
 	}
-	fprintf(stderr, "Test failed: %s\n", message);
+	(void)fprintf(stderr, "Test failed: %s\n", message);
 	exit(1);
 }
 

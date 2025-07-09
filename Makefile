@@ -18,7 +18,9 @@ STATIC=-rdynamic
 endif # !STATIC
 LIBS=$(STATIC) -L. -lcgic
 
-all: libcgic.a cgictest.cgi cgiftest.cgi who_ex.cgi capture
+all: libcgic.a cgictest.cgi who_ex.cgi capture
+
+ftn: cgiftest.cgi
 
 omp: omp_ex.cgi
 

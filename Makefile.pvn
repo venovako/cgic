@@ -1,0 +1,52 @@
+AR=ar
+RANLIB=ranlib
+include ../libpvn/src/pvn.mk
+CC=$(PVN_CC)
+FC=$(PVN_FC)
+ifeq ($(findstring -DNDEBUG,$(PVN_CPPFLAGS)),-DNDEBUG)
+CPPFLAGS=$(PVN_CPPFLAGS)
+else # !NDEBUG
+CPPFLAGS=$(PVN_CPPFLAGS) -DCGICDEBUG
+endif # ?NDEBUG
+CFLAGS=$(PVN_CFLAGS) $(CPPFLAGS)
+FCFLAGS=$(PVN_FCFLAGS) $(CPPFLAGS)
+LDFLAGS=$(PVN_LDFLAGS)
+LIBS=-L. -lcgic $(PVN_LIBS)
+
+all: libcgic.a cgictest.cgi cgiftest.cgi who_ex.cgi omp_ex.cgi capture
+
+install: libcgic.a
+	cp libcgic.a /usr/local/lib
+	cp cgic.h /usr/local/include
+	@echo libcgic.a is in /usr/local/lib
+	@echo cgic.h is in /usr/local/include
+
+libcgic.a: cgic.o cgic.h
+	rm -f libcgic.a
+	$(AR) rc libcgic.a cgic.o
+	$(RANLIB) libcgic.a
+
+cgictest.cgi: cgictest.o libcgic.a
+	$(CC) $(CFLAGS) cgictest.o -o cgictest.cgi $(LDFLAGS) $(LIBS)
+
+cgictest.obj: cgictest.c
+	$(CC) $(CFLAGS) -DCGICNOMAIN cgictest.c -c -o cgictest.obj
+
+cgiftest.cgi: cgictest.obj libcgic.a
+	$(FC) $(FCFLAGS) cgiftest.f90 cgictest.obj -o cgiftest.cgi $(LDFLAGS) $(LIBS)
+
+who_ex.cgi: who_ex.c libcgic.a
+	$(CC) $(CFLAGS) who_ex.c -o who_ex.cgi $(LDFLAGS) $(LIBS)
+
+omp_ex.cgi: omp_ex.c libcgic.a
+	$(CC) $(CFLAGS) omp_ex.c -o omp_ex.cgi $(LDFLAGS) $(LIBS)
+
+capture: capture.o libcgic.a
+	$(CC) $(CFLAGS) capture.o -o capture $(LDFLAGS) $(LIBS)
+
+clean:
+	rm -rfv *.o *.obj *.a *.dSYM *.cgi capture cgicunittest
+
+test:
+	$(CC) $(CFLAGS) -DUNIT_TEST cgic.c -o cgicunittest $(LDFLAGS) $(LIBS)
+	./cgicunittest

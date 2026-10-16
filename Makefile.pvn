@@ -1,17 +1,17 @@
-AR=ar
-RANLIB=ranlib
+AR:=ar
+RANLIB:=ranlib
 include ../libpvn/src/pvn.mk
-CC=$(PVN_CC)
-FC=$(PVN_FC)
+CC:=$(PVN_CC)
+FC:=$(PVN_FC)
 ifeq ($(findstring -DNDEBUG,$(PVN_CPPFLAGS)),-DNDEBUG)
-CPPFLAGS=$(PVN_CPPFLAGS)
+CPPFLAGS:=$(PVN_CPPFLAGS)
 else # !NDEBUG
-CPPFLAGS=$(PVN_CPPFLAGS) -DCGICDEBUG
+CPPFLAGS:=$(PVN_CPPFLAGS) -DCGICDEBUG
 endif # ?NDEBUG
-CFLAGS=$(PVN_CFLAGS) $(CPPFLAGS)
-FCFLAGS=$(PVN_FCFLAGS) $(CPPFLAGS)
-LDFLAGS=$(PVN_LDFLAGS)
-LIBS=-L. -lcgic $(PVN_LIBS)
+CFLAGS:=$(PVN_CFLAGS) $(CPPFLAGS)
+FCFLAGS:=$(PVN_FCFLAGS) $(CPPFLAGS)
+LDFLAGS:=$(PVN_LDFLAGS)
+LIBS:=-L. -lcgic $(PVN_LIBS)
 
 all: libcgic.a cgictest.cgi cgiftest.cgi who_ex.cgi omp_ex.cgi capture
 

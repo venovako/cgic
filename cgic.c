@@ -6,13 +6,12 @@
 	function suggests. If this behavior does not work for you, 
 	modify the getTempFile() function to suit your needs. */
 
-/* see https://github.com/boutell/cgic/pull/19 */
 #ifndef cgicTempDir
 #define cgicTempDir "/tmp"
-#endif /* !cgicTempDir */
+#endif
 #ifndef cgicMaxTempSize
 #define cgicMaxTempSize 1073741824
-#endif /* !cgicMaxTempSize */
+#endif
 
 #if CGICDEBUG
 #define CGICDEBUGSTART                                               \
